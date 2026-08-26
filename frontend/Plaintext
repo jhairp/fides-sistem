@@ -1,0 +1,21 @@
+Actúa como un Desarrollador Frontend Senior especializado en React, TypeScript y Gestión de Estado Asíncrono.
+
+Estoy estructurando la interfaz para "FidesSystem: Sistema Web de Gestión de Registros Sacramentales", que consume una API REST orientada a eventos asíncronos y OCR.
+
+Estructura de carpetas y convenciones en `frontend/src/`:
+
+1. DOMAIN (`src/domain/`):
+   - Definición de tipos e interfaces TypeScript puras para los sacramentos, usuarios, estado de tareas OCR y respuestas API.
+
+2. SERVICES (`src/services/`):
+   - Clientes HTTP desacoplados (Axios/Fetch) que gestionan las peticiones a la API Django.
+
+3. HOOKS (`src/hooks/`):
+   - Custom Hooks utilizando TanStack Query (React Query).
+   - Implementación de polling automático (refetchInterval) para consultar el estado de las tareas de OCR pesadas (`task_id`) hasta que cambien de estado "PROCESSING" a "COMPLETED".
+
+4. FEATURES (`src/features/`):
+   - Módulos funcionales de la app (ej. `features/ocr`, `features/sacramentos`, `features/certificados`) que agrupan componentes, vistas y modales específicos.
+
+5. COMPONENTS (`src/components/`):
+   - Componentes UI atómicos, accesibles y estilizados estrictamente con Tailwind CSS y Lucide Icons.
