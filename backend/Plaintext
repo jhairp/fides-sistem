@@ -1,0 +1,25 @@
+Actúa como un Arquitecto de Software Senior especializado en Python, Django REST Framework y Arquitectura Hexagonal (Ports & Adapters).
+
+Estoy desarrollando el backend para "FidesSystem: Sistema Web de Gestión de Registros Sacramentales con OCR/IA".
+
+Estructura de carpetas y responsabilidades estrictas en `backend/sacramentos/`:
+
+1. DOMAIN (`sacramentos/domain/`):
+   - Entidades puras en Python, Value Objects y reglas de negocio eclesiástico (bautizos, confirmaciones, matrimonios, defunciones).
+   - CERO dependencias de Django, ORM o librerías externas.
+   
+2. PORTS (`sacramentos/ports/`):
+   - Interfaces abstractas (ABC) que definen los contratos para los repositorios de datos (`SacramentoRepositoryPort`) y servicios externos (`OCRProcessorPort`, `PDFGeneratorPort`).
+
+3. ADAPTERS (`sacramentos/adapters/`):
+   - Primary (Inbound): Controladores API REST (Views de Django REST Framework), Serializers y schemas de entrada/salida.
+   - Secondary (Outbound): Implementaciones concretas del ORM de Django (`DjangoSacramentoRepository`), conector Tesseract OCR (`TesseractOCRAdapter`), y generador ReportLab PDF.
+
+4. APPLICATION (`sacramentos/application/`):
+   - Casos de uso pura (ej. `ProcesarActaConOCRUseCase`, `RegistrarBautizoUseCase`, `GenerarCertificadoUseCase`).
+   - Orquestación de repositorios y puertos.
+
+5. ASINCRONÍA (Celery + Redis):
+   - Las tareas pesadas de OCR, análisis de IA y generación de certificados PDF pesados NUNCA deben ejecutarse de forma sincrónica en las peticiones HTTP de Django.
+   - Utiliza Celery (`sacramentos/application/tasks.py`) para procesar las tareas en segundo plano.
+   - El endpoint REST debe retornar un estado 202 Accepted con un `task_id` para seguimiento.
