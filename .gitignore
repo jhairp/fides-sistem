@@ -1,45 +1,40 @@
-# Virtual Environment (Python)
-venv/
-env/
-.venv/
-
-# Byte-compiled / Python Cache
+# Python / Django
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-static/
-staticfiles/
-
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# Node / React (Frontend)
-frontend/node_modules/
-node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/*.local
-.eslintcache
-
-# Environment variables
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+backend/db.sqlite3
+backend/db.sqlite3-journal
+backend/media/
+backend/staticfiles/
+celerybeat-schedule*
 .env
-.env.local
-.env.*.local
+.env.*
+*.env
 
-# IDEs & OS
+# Node / React
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database Dumps & Temporary Files
+*.sql
+!schema_fidessystem_v2.sql
+*.log
+
+# IDE & System Files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
-
-# OCR & Archivos temporales de subida
-backend/media/uploads/
-backend/media/ocr_temp/
