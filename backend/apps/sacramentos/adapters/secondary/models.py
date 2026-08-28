@@ -34,6 +34,8 @@ class CapillaModel(models.Model):
     coordenadas_gps = models.CharField(max_length=100, blank=True, null=True)
     capacidad_personas = models.IntegerField(default=200)
     estado = models.CharField(max_length=20, default='ACTIVA', choices=[('ACTIVA', 'Activa'), ('INACTIVA', 'Inactiva')])
+    legacy_source = models.CharField(max_length=80, blank=True, null=True)
+    legacy_ref = models.CharField(max_length=80, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -47,6 +49,15 @@ class CapillaModel(models.Model):
 
 
 class PersonaModel(models.Model):
+    TIPO_PERSONA_CHOICES = [
+        ('FIEL', 'Fiel'),
+        ('SACERDOTE', 'Sacerdote'),
+        ('PADRE_MADRE', 'Padre/Madre'),
+        ('PADRINO_MADRINA', 'Padrino/Madrina'),
+        ('TESTIGO', 'Testigo'),
+        ('HISTORICO', 'Histórico'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombres = models.CharField(max_length=100)
     apellido_paterno = models.CharField(max_length=100)
@@ -61,6 +72,9 @@ class PersonaModel(models.Model):
     reg_civil_oficialia = models.CharField(max_length=50, blank=True, null=True)
     reg_civil_libro = models.CharField(max_length=50, blank=True, null=True)
     reg_civil_partida = models.CharField(max_length=50, blank=True, null=True)
+    tipo_persona = models.CharField(max_length=30, choices=TIPO_PERSONA_CHOICES, default='FIEL')
+    legacy_source = models.CharField(max_length=80, blank=True, null=True)
+    legacy_ref = models.CharField(max_length=80, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -70,6 +84,10 @@ class PersonaModel(models.Model):
         verbose_name_plural = 'Personas'
         indexes = [
             models.Index(fields=['apellido_paterno', 'apellido_materno', 'nombres'], name='idx_personas_apellidos_nom'),
+            models.Index(fields=['legacy_source', 'legacy_ref'], name='idx_personas_legacy_ref'),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['legacy_source', 'legacy_ref'], name='unique_persona_legacy_ref')
         ]
 
     def __str__(self):
@@ -84,7 +102,7 @@ class LibroSacramentalModel(models.Model):
         max_length=20,
         choices=[('BAUTISMO', 'Bautismo'), ('COMUNION', 'Primera Comunión'), ('CONFIRMACION', 'Confirmación'), ('MATRIMONIO', 'Matrimonio')]
     )
-    numero_libro = models.IntegerField()
+    numero_libro = models.CharField(max_length=50)
     fecha_apertura = models.DateField()
     fecha_cierre = models.DateField(blank=True, null=True)
     estado = models.CharField(max_length=20, default='ABIERTO', choices=[('ABIERTO', 'Abierto'), ('CERRADO', 'Cerrado'), ('ARCHIVADO', 'Archivado')])
@@ -105,15 +123,18 @@ class LibroSacramentalModel(models.Model):
 class PartidaBaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     libro = models.ForeignKey(LibroSacramentalModel, on_delete=models.RESTRICT, related_name='partidas')
-    numero_folio = models.IntegerField(help_text='Página o folio físico del libro')
-    numero_partida = models.IntegerField(help_text='Número de asiento o partida en el folio')
+    numero_folio = models.CharField(max_length=50, help_text='Página o folio físico del libro')
+    numero_partida = models.CharField(max_length=50, help_text='Número de asiento o partida en el folio')
     fecha_sacramento = models.DateField()
     sacerdote_celebrante = models.ForeignKey(PersonaModel, on_delete=models.RESTRICT, related_name='sacramentos_celebrados', null=True, blank=True)
+    sacerdote_certificador = models.ForeignKey(PersonaModel, on_delete=models.SET_NULL, related_name='sacramentos_certificados', null=True, blank=True)
     observaciones = models.TextField(blank=True, null=True)
     imagen_escaneada_url = models.TextField(blank=True, null=True, help_text='URL de la foto o escaneo del libro histórico')
     estado_partida = models.CharField(max_length=20, default='ACTIVA', choices=[('ACTIVA', 'Activa'), ('RECTIFICADA', 'Rectificada'), ('ANULADA', 'Anulada')])
     registrado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.RESTRICT, related_name='partidas_registradas')
     modificado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='partidas_modificadas')
+    legacy_source = models.CharField(max_length=80, blank=True, null=True)
+    legacy_ref = models.CharField(max_length=80, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -122,7 +143,8 @@ class PartidaBaseModel(models.Model):
         verbose_name = 'Partida Base'
         verbose_name_plural = 'Partidas Base'
         constraints = [
-            models.UniqueConstraint(fields=['libro', 'numero_folio', 'numero_partida'], name='unique_partida_fisica')
+            models.UniqueConstraint(fields=['libro', 'numero_folio', 'numero_partida'], name='unique_partida_fisica'),
+            models.UniqueConstraint(fields=['legacy_source', 'legacy_ref'], name='unique_partida_legacy_ref'),
         ]
 
     def __str__(self):
