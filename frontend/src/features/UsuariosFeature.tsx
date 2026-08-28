@@ -1,0 +1,235 @@
+import React, { useState } from 'react';
+import { Users, Plus, User } from 'lucide-react';
+import type { UserAccount } from '../domain/types';
+import { useActionAlert } from '../hooks/useActionAlert';
+import ActionOverlay from '../components/common/ActionOverlay';
+import TopAlert from '../components/common/TopAlert';
+
+export const UsuariosFeature: React.FC = () => {
+  const [users, setUsers] = useState<UserAccount[]>([
+    {
+      id: '1',
+      username: 'SuperAdmin',
+      email: 'suad@gmail.com',
+      role: 'SUPERADMIN',
+      capilla_nombre: 'SANTÍSIMA TRINIDAD (SEDE)',
+      is_active: true,
+      created_at: '2026-08-01',
+    },
+    {
+      id: '2',
+      username: 'PadreAlberto',
+      email: 'alberto.quispe@fidessystem.org',
+      role: 'PARROCO',
+      capilla_nombre: 'SANTÍSIMA TRINIDAD (SEDE)',
+      is_active: true,
+      created_at: '2026-08-05',
+    },
+    {
+      id: '3',
+      username: 'SecretariaMaria',
+      email: 'maria.secretaria@fidessystem.org',
+      role: 'SECRETARIO',
+      capilla_nombre: 'SANTUARIO JESÚS DEL GRAN PODER',
+      is_active: true,
+      created_at: '2026-08-10',
+    },
+  ]);
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const { isVisible, alertType, alertMessage, triggerAlert } = useActionAlert();
+
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    role: 'SECRETARIO' as UserAccount['role'],
+    capilla_nombre: 'SANTÍSIMA TRINIDAD (SEDE)',
+  });
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newUser: UserAccount = {
+      id: String(Date.now()),
+      username: formData.username,
+      email: formData.email,
+      role: formData.role,
+      capilla_nombre: formData.capilla_nombre,
+      is_active: true,
+      created_at: new Date().toISOString().split('T')[0],
+    };
+    setUsers([...users, newUser]);
+    triggerAlert('creado', 'USUARIO Y ROL ASIGNADO EXITOSAMENTE');
+    setIsCreateOpen(false);
+    setFormData({ username: '', email: '', role: 'SECRETARIO', capilla_nombre: 'SANTÍSIMA TRINIDAD (SEDE)' });
+  };
+
+  const handleToggleActive = (user: UserAccount) => {
+    const nextActive = !user.is_active;
+    setUsers(users.map((u) => (u.id === user.id ? { ...u, is_active: nextActive } : u)));
+    triggerAlert(nextActive ? 'activo' : 'inactivo', `USUARIO ${user.username} ${nextActive ? 'ACTIVADO' : 'DESACTIVADO (BAJA LÓGICA)'}`);
+  };
+
+  return (
+    <div className="space-y-5">
+      <ActionOverlay isVisible={isVisible} type={alertType} />
+      <TopAlert show={isVisible} type={alertType} message={alertMessage} />
+
+      {/* Header */}
+      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            Gestión de Cuentas de Usuarios
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Administración centralizada de accesos, capillas asignadas y bajas lógicas (Soft Delete).
+          </p>
+        </div>
+
+        <button
+          onClick={() => setIsCreateOpen(true)}
+          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Crear Usuario</span>
+        </button>
+      </div>
+
+      {/* Table */}
+      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-blue-50/70 dark:bg-slate-800/80 text-blue-900 dark:text-slate-300 font-semibold uppercase tracking-wider">
+              <tr>
+                <th className="py-2.5 px-3 rounded-l-xl">Usuario</th>
+                <th className="py-2.5 px-3">Correo Electrónico</th>
+                <th className="py-2.5 px-3">Rol Asignado</th>
+                <th className="py-2.5 px-3">Capilla</th>
+                <th className="py-2.5 px-3">Estado</th>
+                <th className="py-2.5 px-3 rounded-r-xl text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-blue-50 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200">
+              {users.map((u) => (
+                <tr key={u.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
+                  <td className="py-2.5 px-3 font-bold flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                      <User className="w-3.5 h-3.5" />
+                    </div>
+                    {u.username}
+                  </td>
+                  <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{u.email}</td>
+                  <td className="py-2.5 px-3">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{u.capilla_nombre}</td>
+                  <td className="py-2.5 px-3">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      u.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
+                    }`}>
+                      {u.is_active ? 'ACTIVO' : 'INACTIVO'}
+                    </span>
+                  </td>
+                  <td className="py-2.5 px-3 text-right">
+                    <button
+                      onClick={() => handleToggleActive(u)}
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+                    >
+                      {u.is_active ? 'Desactivar' : 'Activar'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal Crear Usuario */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="w-full max-w-lg p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                <Plus className="w-4 h-4 text-blue-600" />
+                Registrar Nuevo Usuario del Sistema
+              </h3>
+              <button onClick={() => setIsCreateOpen(false)} className="text-slate-400 font-bold text-sm cursor-pointer">✕</button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="space-y-3 text-xs font-semibold">
+              <div>
+                <label className="text-[10px] text-slate-500 block mb-1">NOMBRE DE USUARIO *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  className="w-full p-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] text-slate-500 block mb-1">CORREO ELECTRÓNICO *</label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full p-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] text-slate-500 block mb-1">ROL DEL SISTEMA *</label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
+                    className="w-full p-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-bold"
+                  >
+                    <option value="SUPERADMIN">SUPERADMIN</option>
+                    <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+                    <option value="PARROCO">PÁRROCO</option>
+                    <option value="RECTOR">RECTOR</option>
+                    <option value="SECRETARIO">SECRETARIO</option>
+                    <option value="SACERDOTE">SACERDOTE</option>
+                    <option value="FELIGRES">FELIGRÉS</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[10px] text-slate-500 block mb-1">CAPILLA ASIGNADA</label>
+                  <input
+                    type="text"
+                    value={formData.capilla_nombre}
+                    onChange={(e) => setFormData({ ...formData, capilla_nombre: e.target.value.toUpperCase() })}
+                    className="w-full p-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="px-4 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
+                >
+                  CANCELAR
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer"
+                >
+                  GUARDAR USUARIO
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

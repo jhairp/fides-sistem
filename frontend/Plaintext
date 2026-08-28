@@ -1,21 +1,31 @@
 Actúa como un Desarrollador Frontend Senior especializado en React, TypeScript y Gestión de Estado Asíncrono.
 
-Estoy estructurando la interfaz para "FidesSystem: Sistema Web de Gestión de Registros Sacramentales", que consume una API REST orientada a eventos asíncronos y OCR.
+Estructura de la interfaz para "FidesSystem: Sistema Web de Gestión de Registros Sacramentales", consumiendo la API REST de Django con soporte para OCR, multicapilla y alertas animadas.
 
 Estructura de carpetas y convenciones en `frontend/src/`:
 
 1. DOMAIN (`src/domain/`):
-   - Definición de tipos e interfaces TypeScript puras para los sacramentos, usuarios, estado de tareas OCR y respuestas API.
+   - Definición de tipos e interfaces TypeScript puras para sacramentos, personas, capillas, notas marginales, usuarios y tareas OCR.
 
 2. SERVICES (`src/services/`):
-   - Clientes HTTP desacoplados (Axios/Fetch) que gestionan las peticiones a la API Django.
+   - Clientes HTTP desacoplados (Axios) con interceptor JWT enviando datos automáticos en MAYÚSCULAS.
 
 3. HOOKS (`src/hooks/`):
-   - Custom Hooks utilizando TanStack Query (React Query).
-   - Implementación de polling automático (refetchInterval) para consultar el estado de las tareas de OCR pesadas (`task_id`) hasta que cambien de estado "PROCESSING" a "COMPLETED".
+   - `useActionAlert`: Custom hook para disparar `ActionOverlay` y `TopAlert` en cualquier módulo con 1 sola línea de código.
+   - `useAuth` y `useTheme` para autenticación y alternancia de temas.
 
 4. FEATURES (`src/features/`):
-   - Módulos funcionales de la app (ej. `features/ocr`, `features/sacramentos`, `features/certificados`) que agrupan componentes, vistas y modales específicos.
+   - `BautismosFeature`: CRUD completo de partidas de bautismo con modal de inscripción y anulación (baja lógica).
+   - `MatrimoniosFeature`: CRUD completo de matrimonios canónicos con datos de registro civil.
+   - `NotasMarginalesFeature`: Emisión y vinculación de notas marginales canónicas.
+   - `BusquedaFeature`: Registro y edición de personas con baja lógica.
+   - `CapillasFeature`: Administración de capillas y estados operacionales.
 
-5. COMPONENTS (`src/components/`):
-   - Componentes UI atómicos, accesibles y estilizados estrictamente con Tailwind CSS y Lucide Icons.
+5. COMPONENTS (`src/components/common/`):
+   - `ActionOverlay.tsx`: Portal centrado con ícono gigante animado y brillo ambiental (`framer-motion` + `createPortal`).
+   - `TopAlert.tsx`: Banner superior animado deslizante.
+   - `Button`, `Card`, `Input` con auto-MAYÚSCULAS.
+
+6. REGLAS DE NEGOCIO Y BAJAS LÓGICAS (SOFT DELETE):
+   - Cero Bajas Físicas en Base de Datos: Ninguna operación ejecuta SQL `DELETE`. La anulación de partidas cambia `estado_partida` a `'ANULADA'`, y la desactivación de personas o capillas cambia `estado` a `'INACTIVO'`.
+   - Feedback Visual Inmediato: Todas las operaciones de creación (`creado`), edición (`editado`), anulación (`eliminado`), o cambio de estado (`activo`/`inactivo`) deben disparar `ActionOverlay` y `TopAlert`.

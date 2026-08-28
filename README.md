@@ -33,36 +33,7 @@ El sistema crea 7 Grupos de Permisos nativos en Django (`Group`), organizados je
 
 ---
 
-## 🛠️ Comandos de Administración de Base de Datos
-
-En la carpeta `backend`, dispones de dos comandos personalizados fundamentales:
-
-### 1. Comando `seed_data`
-Pobla la base de datos con los datos reales de la parroquia en **MAYÚSCULAS**:
-```powershell
-python manage.py seed_data
-```
-**Lo que genera**:
-- **Parroquia Principal**: `PARROQUIA SANTÍSIMA TRINIDAD` (Teléfono `74185852`).
-- **5 Capillas Reales** (Capacidad: 200 personas cada una):
-  1. `SANTÍSIMA TRINIDAD` (Sede Principal - Teléf: `74185852`, Coord: `-16.4986163,-68.1408758`).
-  2. `SANTUARIO JESÚS DEL GRAN PODER` (Teléf: `72062964`, Coord: `-16.4997032,-68.14259419999999`).
-  3. `SANTA RITA` (Teléf: `67107486`, Coord: `-16.4998146,-68.1501187`).
-  4. `SEÑOR DE EXALTACIÓN` (Teléf: `74856914`, Coord: `-16.4961481,-68.1454899`).
-  5. `CAPILLA DE SANTA MÓNICA` (Teléf: `741`, Coord: `-16.5069112,-68.1524014`).
-- Los 7 Grupos de Permisos en MAYÚSCULAS.
-- El usuario `SuperAdmin` (`suad@gmail.com` / `12345678`).
-- Personas y partidas de bautismo de prueba.
-
-### 2. Comando `reset_db`
-Vacía por completo todas las tablas de PostgreSQL/SQLite, re-aplica las migraciones de cero y ejecuta automáticamente `seed_data`:
-```powershell
-python manage.py reset_db
-```
-
----
-
-## 🚀 Guía de Instalación y Ejecución
+## 💻 Ejecución del Backend (Django REST)
 
 ```powershell
 # 1. Crear y activar entorno virtual
@@ -73,7 +44,7 @@ python -m venv venv
 cd backend
 pip install -r requirements.txt
 
-# 3. Aplicar migraciones y poblar datos iniciales
+# 3. Reiniciar y aplicar migraciones con datos reales (MAYÚSCULAS)
 python manage.py reset_db
 
 # 4. Iniciar el servidor de desarrollo
@@ -82,3 +53,24 @@ python manage.py runserver
 
 Acceso al panel administrativo: `http://127.0.0.1:8000/admin/`  
 Acceso a la API REST: `http://127.0.0.1:8000/api/sacramentos/`
+
+---
+
+## 🎨 Ejecución del Frontend (React + Vite + Tailwind CSS)
+
+```powershell
+# 1. Navegar a la carpeta del frontend
+cd frontend
+
+# 2. Iniciar el servidor de desarrollo Vite
+npm run dev
+```
+
+La aplicación se iniciará en `http://localhost:5173/`.
+
+### Características del Frontend:
+- **Estética Eclesiástica Digna**: Paleta con Dorado Imperial Cálido (`#F59E0B`), Azul Noche Catedral (`#0F172A`) y detalles en Carmesí (`#E11D48`).
+- **Soporte de Tema Claro y Oscuro**: Alternancia de tema con persistencia en `localStorage`.
+- **Modo Mayúsculas Automático**: Transformación de todos los campos de texto a MAYÚSCULAS antes del envío a la API.
+- **Visualización de Capillas**: Módulos interactivos para las 5 capillas reales (*Santísima Trinidad*, *Jesús del Gran Poder*, *Santa Rita*, *Señor de Exaltación*, *Santa Mónica*).
+- **Procesamiento de Libros por OCR con IA**: Carga de imágenes con vista previa e interfaz de validación humana (*Human-in-the-loop*).
