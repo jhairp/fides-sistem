@@ -3,8 +3,8 @@ import { Church, Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export const AuthFeature: React.FC = () => {
-  const [username, setUsername] = useState('SuperAdmin');
-  const [password, setPassword] = useState('12345678');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -87,12 +87,7 @@ export const AuthFeature: React.FC = () => {
           </button>
         </form>
 
-        <div className="p-3 rounded-xl bg-blue-950/40 border border-blue-800/40 text-center">
-          <p className="text-[10px] text-slate-400 uppercase font-bold">ACCESO RÁPIDO SEED DATA</p>
-          <p className="text-[11px] text-blue-400 font-black uppercase mt-0.5">
-            USER: SuperAdmin | PASS: 12345678
-          </p>
-        </div>
+
       </div>
     </div>
   );
