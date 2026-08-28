@@ -1,0 +1,2430 @@
+﻿{
+    "source":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\access_legacy_workcopy.mdb",
+    "output_dir":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports",
+    "provider":  "Microsoft.ACE.OLEDB.16.0",
+    "exported_at":  "2026-08-28T09:36:58.1375271-04:00",
+    "tables":  [
+                   {
+                       "access_table":  "tabBautismo",
+                       "staging_table":  "stg_tabBautismo",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabBautismo.csv",
+                       "row_count":  22237,
+                       "columns":  [
+                                       {
+                                           "name":  "bauCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "bauRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquia",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLibro",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPagina",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPartida",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquiaC",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPersonaM",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquiaM",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFechaBautismo",
+                                           "ordinal":  11,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPadre1",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFue",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauMadrina",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauNombreMadrina",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauNombrePadrino",
+                                           "ordinal":  16,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistroCivil",
+                                           "ordinal":  17,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLibroCivil",
+                                           "ordinal":  18,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPartidaCivil",
+                                           "ordinal":  19,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauNotasMarginales",
+                                           "ordinal":  20,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPadre2",
+                                           "ordinal":  21,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauDatosCorrectos",
+                                           "ordinal":  22,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  23,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauNCImpresos",
+                                           "ordinal":  24,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauNotasInternas",
+                                           "ordinal":  25,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabCertificadoNoExistencia",
+                       "staging_table":  "stg_tabCertificadoNoExistencia",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabCertificadoNoExistencia.csv",
+                       "row_count":  0,
+                       "columns":  [
+                                       {
+                                           "name":  "cneRegistro",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneParroquia",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cnePadre",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneFecha1",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneFecha2",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneNombre",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneEdad",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneLugarNacimiento",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneFechaNacimiento",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneGenero",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneFechaBautizo",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneMadrina",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneNombreMadrina",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneNombreTestigo",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneEdadTestigo",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneCITestigo",
+                                           "ordinal":  16,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneDomicilioTestigo",
+                                           "ordinal":  17,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneDe",
+                                           "ordinal":  18,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneObjeto",
+                                           "ordinal":  19,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneCausa",
+                                           "ordinal":  20,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cneFechaActual",
+                                           "ordinal":  21,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabCobro",
+                       "staging_table":  "stg_tabCobro",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabCobro.csv",
+                       "row_count":  0,
+                       "columns":  [
+                                       {
+                                           "name":  "cobRegistro",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "cobFecha",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cobHora",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cobQuienHizo",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cobParaQuien",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cobTipo",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cobMonto",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cobOtro",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabCobroCertificado",
+                       "staging_table":  "stg_tabCobroCertificado",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabCobroCertificado.csv",
+                       "row_count":  6742,
+                       "columns":  [
+                                       {
+                                           "name":  "cerRegistro",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerParroquia",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerCertificado",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerCosto",
+                                           "ordinal":  4,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerImpreso",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerFecha",
+                                           "ordinal":  6,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerHora",
+                                           "ordinal":  7,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerSolicitante",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuRegistro",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conCodigo",
+                                           "ordinal":  11,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerAnulado",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cerNumeroCertificado",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "OtroRegistro",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabConfirmacion",
+                       "staging_table":  "stg_tabConfirmacion",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabConfirmacion.csv",
+                       "row_count":  1,
+                       "columns":  [
+                                       {
+                                           "name":  "conCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "conRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conLibro",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPagina",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPartida",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFechaC",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPadre1",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFue",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conMadrina",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNombreMadrina",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNotasMarginales",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPadre2",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistro",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabConfirmacion0",
+                       "staging_table":  "stg_tabConfirmacion0",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabConfirmacion0.csv",
+                       "row_count":  1,
+                       "columns":  [
+                                       {
+                                           "name":  "conCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "conRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conLibro",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPagina",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPartida",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFechaC",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPadre1",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFue",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conMadrina",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNombreMadrina",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNotasMarginales",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPadre2",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistro",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabConfirmacion01",
+                       "staging_table":  "stg_tabConfirmacion01",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabConfirmacion01.csv",
+                       "row_count":  2,
+                       "columns":  [
+                                       {
+                                           "name":  "pcoCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "pcoRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoParroquia",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoLibro",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPagina",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPartida",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoFechaPC",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPadre1",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoFue",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoMadrina",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNombreMadrina",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNombrePadrino",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNotasMarginales",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPadre2",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNotasInternas",
+                                           "ordinal":  16,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoDatosCorrectos",
+                                           "ordinal":  17,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  18,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistro",
+                                           "ordinal":  19,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauBautizado",
+                                           "ordinal":  20,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquia",
+                                           "ordinal":  21,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLibro",
+                                           "ordinal":  22,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPagina",
+                                           "ordinal":  23,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauN",
+                                           "ordinal":  24,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFechaBautismo",
+                                           "ordinal":  25,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLugar",
+                                           "ordinal":  26,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcParroquia",
+                                           "ordinal":  27,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcLugar",
+                                           "ordinal":  28,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcLibro",
+                                           "ordinal":  29,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcPagina",
+                                           "ordinal":  30,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcN",
+                                           "ordinal":  31,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcFecha",
+                                           "ordinal":  32,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabControl",
+                       "staging_table":  "stg_tabControl",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabControl.csv",
+                       "row_count":  36893,
+                       "columns":  [
+                                       {
+                                           "name":  "conCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "conFechaIngreso",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conHoraIngreso",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conArea",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuRegistro",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabControlCertificados",
+                       "staging_table":  "stg_tabControlCertificados",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabControlCertificados.csv",
+                       "row_count":  6699,
+                       "columns":  [
+                                       {
+                                           "name":  "conCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "conFecha",
+                                           "ordinal":  2,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conHora",
+                                           "ordinal":  3,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuRegistro",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conTipo",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "otroRegistro",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNumeroCertificado",
+                                           "ordinal":  8,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conAnulado",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabCostos",
+                       "staging_table":  "stg_tabCostos",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabCostos.csv",
+                       "row_count":  19,
+                       "columns":  [
+                                       {
+                                           "name":  "cosCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "cosRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosServicio",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosCosto",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosTipo",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosHabilitado",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabCursillo",
+                       "staging_table":  "stg_tabCursillo",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabCursillo.csv",
+                       "row_count":  0,
+                       "columns":  [
+                                       {
+                                           "name":  "curCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curParroquia",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curPersonaSolicitante",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curPara",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curFechaRealizacion",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curOtro",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "curAnulado",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "sacRegistro",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosServicio",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosCosto",
+                                           "ordinal":  12,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuRegistro",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabDatosParroquia",
+                       "staging_table":  "stg_tabDatosParroquia",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabDatosParroquia.csv",
+                       "row_count":  1,
+                       "columns":  [
+                                       {
+                                           "name":  "dpaCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "dpaNombreP",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "dpaJurisdiccionP",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "dpaLugarP",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "dpaDireccionP",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "dpaTelefonosP",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "dpaOtroP",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "dpaParroco",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabGeneral",
+                       "staging_table":  "stg_tabGeneral",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabGeneral.csv",
+                       "row_count":  7,
+                       "columns":  [
+                                       {
+                                           "name":  "genCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "genFecha",
+                                           "ordinal":  2,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "genServicio",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "genCosto",
+                                           "ordinal":  4,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "genTipo",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "genAnulado",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "genNCertificado",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabMatrimonio",
+                       "staging_table":  "stg_tabMatrimonio",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabMatrimonio.csv",
+                       "row_count":  599,
+                       "columns":  [
+                                       {
+                                           "name":  "matCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "matRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matParroquia",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matLibroM",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPaginaM",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPartidaM",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matFechaMatrimonio",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPadre1",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistroNovio",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistroNovio",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquiaNovio",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauArquiDiocesisNovio",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFechaBautizoNovio",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLibroNovio",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPaginaNovio",
+                                           "ordinal":  16,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPartidaNovio",
+                                           "ordinal":  17,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matEstadoNovio",
+                                           "ordinal":  18,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matDomicilioNovio",
+                                           "ordinal":  19,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistroNovia",
+                                           "ordinal":  20,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistroNovia",
+                                           "ordinal":  21,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquiaNovia",
+                                           "ordinal":  22,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauArquiDiocesisNovia",
+                                           "ordinal":  23,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFechaBautizoNovia",
+                                           "ordinal":  24,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLibroNovia",
+                                           "ordinal":  25,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPaginaNovia",
+                                           "ordinal":  26,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPartidaNovia",
+                                           "ordinal":  27,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matEstadoNovia",
+                                           "ordinal":  28,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matDomicilioNovia",
+                                           "ordinal":  29,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matTestigo1",
+                                           "ordinal":  30,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matTestigo2",
+                                           "ordinal":  31,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPadrino1",
+                                           "ordinal":  32,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPadrino2",
+                                           "ordinal":  33,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matLugarFechaMatCivil",
+                                           "ordinal":  34,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matRC",
+                                           "ordinal":  35,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPartida",
+                                           "ordinal":  36,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matLibro",
+                                           "ordinal":  37,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matNotasMarginales",
+                                           "ordinal":  38,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matNotasInternas",
+                                           "ordinal":  39,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matPadre2",
+                                           "ordinal":  40,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matDatosCorrectos",
+                                           "ordinal":  41,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "matNCImpresos",
+                                           "ordinal":  42,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcParroquiaNovio",
+                                           "ordinal":  43,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcLugarNovio",
+                                           "ordinal":  44,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcLibroNovio",
+                                           "ordinal":  45,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcPaginaNovio",
+                                           "ordinal":  46,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcNNovio",
+                                           "ordinal":  47,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcFechaNovio",
+                                           "ordinal":  48,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcParroquiaNovia",
+                                           "ordinal":  49,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcLugarNovia",
+                                           "ordinal":  50,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcLibroNovia",
+                                           "ordinal":  51,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcPaginaNovia",
+                                           "ordinal":  52,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcNNovia",
+                                           "ordinal":  53,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcFechaNovia",
+                                           "ordinal":  54,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conParroquiaNovio",
+                                           "ordinal":  55,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conLugarNovio",
+                                           "ordinal":  56,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conLibroNovio",
+                                           "ordinal":  57,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPaginaNovio",
+                                           "ordinal":  58,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNNovio",
+                                           "ordinal":  59,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFechaNovio",
+                                           "ordinal":  60,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conParroquiaNovia",
+                                           "ordinal":  61,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conLugarNovia",
+                                           "ordinal":  62,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conLibroNovia",
+                                           "ordinal":  63,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conPaginaNovia",
+                                           "ordinal":  64,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conNNovia",
+                                           "ordinal":  65,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "conFechaNovia",
+                                           "ordinal":  66,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabMisa",
+                       "staging_table":  "stg_tabMisa",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabMisa.csv",
+                       "row_count":  435,
+                       "columns":  [
+                                       {
+                                           "name":  "misaCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "misaRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaParroquia",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaFechaRegistro",
+                                           "ordinal":  4,
+                                           "access_data_type":  7,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaPersonaSolicitante",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  100,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaPara",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaFechaRealizacion",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaHora",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaOtro",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misaAnulado",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosServicio",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "cosCosto",
+                                           "ordinal":  12,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "sacRegistro",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuRegistro",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabParroquias",
+                       "staging_table":  "stg_tabParroquias",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabParroquias.csv",
+                       "row_count":  302,
+                       "columns":  [
+                                       {
+                                           "name":  "parCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "parRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "parNombre",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "parJurisdiccion",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "parLugar",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "parOtro",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "parHabilitado",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabPersona",
+                       "staging_table":  "stg_tabPersona",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabPersona.csv",
+                       "row_count":  23459,
+                       "columns":  [
+                                       {
+                                           "name":  "perCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perNombres",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "Campo1",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perApellido1",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perApellido2",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perLugarN",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  100,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perJurisdiccion",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perFechaNacimiento",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perSexo",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perPadre",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perMadre",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perHabilitado",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabPrimeraComunion",
+                       "staging_table":  "stg_tabPrimeraComunion",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabPrimeraComunion.csv",
+                       "row_count":  0,
+                       "columns":  [
+                                       {
+                                           "name":  "pcoCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "pcoRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoFechaRegistro",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoParroquia",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoLibro",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPagina",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPartida",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoFechaPC",
+                                           "ordinal":  8,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoLugar",
+                                           "ordinal":  9,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPadre1",
+                                           "ordinal":  10,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoFue",
+                                           "ordinal":  11,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoMadrina",
+                                           "ordinal":  12,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNombreMadrina",
+                                           "ordinal":  13,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNombrePadrino",
+                                           "ordinal":  14,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNotasMarginales",
+                                           "ordinal":  15,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoPadre2",
+                                           "ordinal":  16,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoNotasInternas",
+                                           "ordinal":  17,
+                                           "access_data_type":  130,
+                                           "max_length":  255,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "pcoDatosCorrectos",
+                                           "ordinal":  18,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "perRegistro",
+                                           "ordinal":  19,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauRegistro",
+                                           "ordinal":  20,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauBautizado",
+                                           "ordinal":  21,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauParroquia",
+                                           "ordinal":  22,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLibro",
+                                           "ordinal":  23,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauPagina",
+                                           "ordinal":  24,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauN",
+                                           "ordinal":  25,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauFechaBautismo",
+                                           "ordinal":  26,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "bauLugar",
+                                           "ordinal":  27,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabSacerdotes",
+                       "staging_table":  "stg_tabSacerdotes",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabSacerdotes.csv",
+                       "row_count":  30,
+                       "columns":  [
+                                       {
+                                           "name":  "sacCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "sacRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "sacNombre",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "sacOtro",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "sacHabilitado",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabTipoMisa",
+                       "staging_table":  "stg_tabTipoMisa",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabTipoMisa.csv",
+                       "row_count":  0,
+                       "columns":  [
+                                       {
+                                           "name":  "misCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "misRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misTipoMisa",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misOtro",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "misHabilitado",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   },
+                   {
+                       "access_table":  "tabUsuario",
+                       "staging_table":  "stg_tabUsuario",
+                       "csv_file":  "C:\\Users\\ASUS\\Desktop\\metodologia de la investigacion\\FidesSystem\\backend\\legacy_exports\\tabUsuario.csv",
+                       "row_count":  5,
+                       "columns":  [
+                                       {
+                                           "name":  "usuCodigo",
+                                           "ordinal":  1,
+                                           "access_data_type":  3,
+                                           "max_length":  null,
+                                           "nullable":  false
+                                       },
+                                       {
+                                           "name":  "usuRegistro",
+                                           "ordinal":  2,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuNombre",
+                                           "ordinal":  3,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuOtro",
+                                           "ordinal":  4,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuTipo",
+                                           "ordinal":  5,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuContraseña",
+                                           "ordinal":  6,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       },
+                                       {
+                                           "name":  "usuHabilitado",
+                                           "ordinal":  7,
+                                           "access_data_type":  130,
+                                           "max_length":  50,
+                                           "nullable":  true
+                                       }
+                                   ]
+                   }
+               ]
+}

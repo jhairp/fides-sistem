@@ -25,7 +25,7 @@ from .serializers import (
 
 
 class ParroquiaViewSet(viewsets.ModelViewSet):
-    queryset = ParroquiaModel.objects.all()
+    queryset = ParroquiaModel.objects.all().order_by('nombre')
     serializer_class = ParroquiaSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
@@ -33,7 +33,7 @@ class ParroquiaViewSet(viewsets.ModelViewSet):
 
 
 class CapillaViewSet(viewsets.ModelViewSet):
-    queryset = CapillaModel.objects.all()
+    queryset = CapillaModel.objects.all().order_by('nombre')
     serializer_class = CapillaSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
@@ -41,7 +41,7 @@ class CapillaViewSet(viewsets.ModelViewSet):
 
 
 class PersonaViewSet(viewsets.ModelViewSet):
-    queryset = PersonaModel.objects.all()
+    queryset = PersonaModel.objects.all().order_by('apellido_paterno', 'apellido_materno', 'nombres', 'id')
     serializer_class = PersonaSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
@@ -49,7 +49,7 @@ class PersonaViewSet(viewsets.ModelViewSet):
 
 
 class LibroSacramentalViewSet(viewsets.ModelViewSet):
-    queryset = LibroSacramentalModel.objects.all()
+    queryset = LibroSacramentalModel.objects.all().order_by('tipo_sacramento', 'numero_libro', 'id')
     serializer_class = LibroSacramentalSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
@@ -57,7 +57,7 @@ class LibroSacramentalViewSet(viewsets.ModelViewSet):
 
 
 class PartidaBaseViewSet(viewsets.ModelViewSet):
-    queryset = PartidaBaseModel.objects.all()
+    queryset = PartidaBaseModel.objects.all().order_by('fecha_sacramento', 'numero_folio', 'numero_partida', 'id')
     serializer_class = PartidaBaseSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
@@ -65,24 +65,24 @@ class PartidaBaseViewSet(viewsets.ModelViewSet):
 
 
 class PartidaBautismoViewSet(viewsets.ModelViewSet):
-    queryset = PartidaBautismoModel.objects.all()
+    queryset = PartidaBautismoModel.objects.all().order_by('partida__fecha_sacramento', 'partida__numero_folio', 'partida__numero_partida')
     serializer_class = PartidaBautismoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class PartidaMatrimonioViewSet(viewsets.ModelViewSet):
-    queryset = PartidaMatrimonioModel.objects.all()
+    queryset = PartidaMatrimonioModel.objects.all().order_by('partida__fecha_sacramento', 'partida__numero_folio', 'partida__numero_partida')
     serializer_class = PartidaMatrimonioSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class NotaMarginalViewSet(viewsets.ModelViewSet):
-    queryset = NotaMarginalModel.objects.all()
+    queryset = NotaMarginalModel.objects.all().order_by('fecha_decreto', 'id')
     serializer_class = NotaMarginalSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class AuditoriaPartidaViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = AuditoriaPartidaModel.objects.all()
+    queryset = AuditoriaPartidaModel.objects.all().order_by('-created_at', 'id')
     serializer_class = AuditoriaPartidaSerializer
     permission_classes = [IsAuthenticated]
