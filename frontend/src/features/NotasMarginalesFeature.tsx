@@ -5,6 +5,7 @@ import { apiService } from '../services/api';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const NotasMarginalesFeature: React.FC = () => {
   const [notas, setNotas] = useState<NotaMarginal[]>([]);
@@ -69,26 +70,20 @@ export const NotasMarginalesFeature: React.FC = () => {
       <ActionOverlay isVisible={isVisible} type={alertType} />
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
-      {/* Header */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2">
-            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            GESTIÓN DE NOTAS MARGINALES CANÓNICAS
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Vinculación de notas de matrimonio, confirmación y decretos canónicos (locales o parroquia externa).
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>EMITIR NOTA MARGINAL</span>
-        </button>
-      </div>
+      <FeatureHeader
+        title="GESTIÓN DE NOTAS MARGINALES CANÓNICAS"
+        description="Vinculación de notas de matrimonio, confirmación y decretos canónicos (locales o parroquia externa)."
+        icon={FileText}
+        action={
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>EMITIR NOTA MARGINAL</span>
+          </button>
+        }
+      />
 
       {/* Table */}
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">

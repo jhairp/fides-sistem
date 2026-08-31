@@ -5,6 +5,7 @@ import { apiService } from '../services/api';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const MatrimoniosFeature: React.FC = () => {
   const [matrimonios, setMatrimonios] = useState<PartidaMatrimonio[]>([]);
@@ -79,25 +80,20 @@ export const MatrimoniosFeature: React.FC = () => {
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
       {/* Header */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2">
-            <Heart className="w-4 h-4 text-rose-500" />
-            REGISTRO DE PARTIDAS DE MATRIMONIO
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Matrimonios canónicos con datos de Registro Civil y bajas lógicas protegidas.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>NUEVO MATRIMONIO CANÓNICO</span>
-        </button>
-      </div>
+      <FeatureHeader
+        title="REGISTRO DE PARTIDAS DE MATRIMONIO"
+        description="Matrimonios canónicos con datos de Registro Civil y bajas lógicas protegidas."
+        icon={Heart}
+        action={
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>NUEVO MATRIMONIO CANÓNICO</span>
+          </button>
+        }
+      />
 
       {/* Table */}
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">

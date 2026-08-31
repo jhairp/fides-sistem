@@ -1,6 +1,7 @@
 import React from 'react';
 import { ClipboardList, User, Clock } from 'lucide-react';
 import type { AuditLog } from '../domain/types';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const AuditoriaFeature: React.FC = () => {
   const logs: AuditLog[] = [
@@ -54,17 +55,12 @@ export const AuditoriaFeature: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <ClipboardList className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          Registro de Auditoría e Historial de Cambios
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Panel inalterable de actividades registradas en JSONB. Cada operación de creación, edición o anulación queda documentada.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <FeatureHeader
+        title="REGISTRO DE AUDITORÍA E HISTORIAL DE CAMBIOS"
+        description="Panel inalterable de actividades registradas en JSONB. Cada operación de creación, edición o anulación queda documentada."
+        icon={ClipboardList}
+      />
 
       {/* Timeline Table */}
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScanLine, UploadCloud, CheckCircle2, FileText, ArrowRight } from 'lucide-react';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const OCRFeature: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -36,16 +37,12 @@ export const OCRFeature: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <h2 className="text-xl font-black text-slate-900 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2">
-          <ScanLine className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          DIGITALIZACIÓN Y RECONOCIMIENTO ÓPTICO CON IA (OCR)
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Sube la fotografía o escaneo de un libro histórico manuscrito. El motor de IA extraerá automáticamente los datos para revisión humana.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <FeatureHeader
+        title="DIGITALIZACIÓN Y RECONOCIMIENTO ÓPTICO CON IA (OCR)"
+        description="Sube la fotografía o escaneo de un libro histórico manuscrito. El motor de IA extraerá automáticamente los datos para revisión humana."
+        icon={ScanLine}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upload Box */}

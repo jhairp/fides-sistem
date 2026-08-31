@@ -5,6 +5,7 @@ import { apiService } from '../services/api';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const CapillasFeature: React.FC = () => {
   const [capillas, setCapillas] = useState<Capilla[]>([]);
@@ -36,15 +37,11 @@ export const CapillasFeature: React.FC = () => {
       <ActionOverlay isVisible={isVisible} type={alertType} />
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          CAPILLAS BAJO LA JURISDICCIÓN DE LA PARROQUIA SANTÍSIMA TRINIDAD
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Red centralizada de capillas en la ciudad de La Paz, Bolivia. Todas las partidas están unificadas.
-        </p>
-      </div>
+      <FeatureHeader
+        title="CAPILLAS BAJO LA JURISDICCIÓN DE LA PARROQUIA SANTÍSIMA TRINIDAD"
+        description="Red centralizada de capillas en la ciudad de La Paz, Bolivia. Todas las partidas están unificadas."
+        icon={Building2}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {capillas.map((c) => (

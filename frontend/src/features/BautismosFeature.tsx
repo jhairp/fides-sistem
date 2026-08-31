@@ -6,6 +6,8 @@ import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 
+import { FeatureHeader } from '../components/common/FeatureHeader';
+
 export const BautismosFeature: React.FC = () => {
   const [bautismos, setBautismos] = useState<PartidaBautismo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,25 +85,20 @@ export const BautismosFeature: React.FC = () => {
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
       {/* Header */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            REGISTRO DE PARTIDAS DE BAUTISMO
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Gestión completa de libros sacramentales de bautismos con bajas lógicas y validación canónica.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>NUEVA PARTIDA DE BAUTISMO</span>
-        </button>
-      </div>
+      <FeatureHeader
+        title="REGISTRO DE PARTIDAS DE BAUTISMO"
+        description="Gestión completa de libros sacramentales de bautismos con bajas lógicas y validación canónica."
+        icon={BookOpen}
+        action={
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>NUEVA PARTIDA DE BAUTISMO</span>
+          </button>
+        }
+      />
 
       {/* Table */}
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
