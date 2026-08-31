@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './hooks/useTheme';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
-import type { ActiveTab } from './components/Sidebar';
 import { DashboardFeature } from './features/DashboardFeature';
 import { BusquedaFeature } from './features/BusquedaFeature';
 import { BautismosFeature } from './features/BautismosFeature';
@@ -20,7 +20,6 @@ import { AuthFeature } from './features/AuthFeature';
 
 const MainLayout: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   if (!isAuthenticated) {
@@ -36,25 +35,27 @@ const MainLayout: React.FC = () => {
 
       <div className="flex flex-1 items-start gap-4 pr-4 max-w-[1600px] w-full mx-auto">
         <Sidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
 
         <main className="flex-1 my-2 py-2 w-full min-w-0">
-          {activeTab === 'dashboard' && <DashboardFeature setActiveTab={setActiveTab} />}
-          {activeTab === 'busqueda' && <BusquedaFeature />}
-          {activeTab === 'bautismos' && <BautismosFeature />}
-          {activeTab === 'matrimonios' && <MatrimoniosFeature />}
-          {activeTab === 'notas' && <NotasMarginalesFeature />}
-          {activeTab === 'ocr' && <OCRFeature />}
-          {activeTab === 'capillas' && <CapillasFeature />}
-          {activeTab === 'usuarios' && <UsuariosFeature />}
-          {activeTab === 'roles' && <RolesPermisosFeature />}
-          {activeTab === 'eventos' && <EventosFeature />}
-          {activeTab === 'comprobantes' && <ComprobantesFeature />}
-          {activeTab === 'auditoria' && <AuditoriaFeature />}
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardFeature />} />
+            <Route path="/busqueda" element={<BusquedaFeature />} />
+            <Route path="/bautismos" element={<BautismosFeature />} />
+            <Route path="/matrimonios" element={<MatrimoniosFeature />} />
+            <Route path="/notas" element={<NotasMarginalesFeature />} />
+            <Route path="/ocr" element={<OCRFeature />} />
+            <Route path="/capillas" element={<CapillasFeature />} />
+            <Route path="/usuarios" element={<UsuariosFeature />} />
+            <Route path="/roles" element={<RolesPermisosFeature />} />
+            <Route path="/eventos" element={<EventosFeature />} />
+            <Route path="/comprobantes" element={<ComprobantesFeature />} />
+            <Route path="/auditoria" element={<AuditoriaFeature />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
         </main>
       </div>
     </div>
@@ -63,11 +64,13 @@ const MainLayout: React.FC = () => {
 
 export function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <MainLayout />
-      </AuthProvider>
-    </ThemeProvider>
+    <BrowserRouter>
+      <ThemeProvider>
+        <AuthProvider>
+          <MainLayout />
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 
