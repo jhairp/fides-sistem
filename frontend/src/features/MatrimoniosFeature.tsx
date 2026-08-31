@@ -6,6 +6,8 @@ import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
+import { FeatureTable } from '../components/common/FeatureTable';
+import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 
 export const MatrimoniosFeature: React.FC = () => {
   const [matrimonios, setMatrimonios] = useState<PartidaMatrimonio[]>([]);
@@ -73,6 +75,65 @@ export const MatrimoniosFeature: React.FC = () => {
     fetchMatrimonios();
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns = [
+    {
+      header: 'Esposos (Novio y Novia)',
+      render: (m: PartidaMatrimonio) => (
+        <div className="flex items-center gap-2 font-bold">
+          <div className="w-6 h-6 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
+            <Heart className="w-3.5 h-3.5" />
+          </div>
+          <span>
+            {m.novio_detalle?.nombres || 'PEDRO'} & {m.novia_detalle?.nombres || 'MARÍA'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: 'Libro / Folio / Partida',
+      render: (m: PartidaMatrimonio) => (
+        <span>
+          L. {m.partida_detalle?.numero_folio || 1} / F. {m.partida_detalle?.numero_folio || 1} / P. {m.partida_detalle?.numero_partida || 1}
+        </span>
+      ),
+    },
+    {
+      header: 'Registro Civil',
+      render: (m: PartidaMatrimonio) => (
+        <span>{m.reg_civil_oficialia || 'OFICIALÍA LA PAZ'}</span>
+      ),
+    },
+    {
+      header: 'Estado Partida',
+      render: (m: PartidaMatrimonio) => (
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          {m.partida_detalle?.estado_partida || 'ACTIVA'}
+        </span>
+      ),
+    },
+    {
+      header: 'Acciones',
+      className: 'text-right',
+      render: (m: PartidaMatrimonio) => (
+        <button
+          onClick={() => handleAnularMatrimonio(m)}
+          className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 hover:text-white text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+        >
+          ANULAR
+        </button>
+      ),
+    },
+  ];
+
+  // Client-side search filtering
+  const filteredMatrimonios = matrimonios.filter((m) => {
+    const term = searchTerm.toLowerCase();
+    const spouses = `${m.novio_detalle?.nombres} ${m.novia_detalle?.nombres}`.toLowerCase();
+    return spouses.includes(term) || m.reg_civil_oficialia?.toLowerCase().includes(term);
+  });
+
   return (
     <div className="space-y-4">
       {/* Portals */}
@@ -95,65 +156,22 @@ export const MatrimoniosFeature: React.FC = () => {
         }
       />
 
-      {/* Table */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-            LIBRO DE MATRIMONIOS ({matrimonios.length})
-          </h3>
-        </div>
+      {/* Reusable Search Filters */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="BUSCAR POR ESPOSOS O REGISTRO CIVIL..."
+      />
 
-        {loading ? (
-          <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-bold uppercase animate-pulse">
-            Cargando libro de matrimonios...
-          </div>
-        ) : matrimonios.length === 0 ? (
-          <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-semibold">
-            No se encontraron matrimonios registrados.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-rose-50/80 dark:bg-slate-800/80 text-rose-900 dark:text-slate-300 font-bold uppercase tracking-wider">
-                <tr>
-                  <th className="p-3 rounded-l-xl">ESPOSOS (NOVIO Y NOVIA)</th>
-                  <th className="p-3">LIBRO / FOLIO / PARTIDA</th>
-                  <th className="p-3">REGISTRO CIVIL</th>
-                  <th className="p-3">ESTADO PARTIDA</th>
-                  <th className="p-3 rounded-r-xl text-right">ACCIONES</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-rose-50 dark:divide-slate-800 font-semibold text-slate-800 dark:text-slate-200 uppercase">
-                {matrimonios.map((m, idx) => (
-                  <tr key={idx} className="hover:bg-rose-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="p-3 font-bold flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
-                        <Heart className="w-4 h-4" />
-                      </div>
-                      {m.novio_detalle?.nombres || 'PEDRO'} & {m.novia_detalle?.nombres || 'MARÍA'}
-                    </td>
-                    <td className="p-3">L. {m.partida_detalle?.numero_folio || 1} / F. {m.partida_detalle?.numero_folio || 1} / P. {m.partida_detalle?.numero_partida || 1}</td>
-                    <td className="p-3">{m.reg_civil_oficialia || 'OFICIALÍA LA PAZ'}</td>
-                    <td className="p-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                        {m.partida_detalle?.estado_partida || 'ACTIVA'}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right space-x-2">
-                      <button
-                        onClick={() => handleAnularMatrimonio(m)}
-                        className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 hover:text-white text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
-                      >
-                        ANULAR
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Reusable Data Table */}
+      <FeatureTable
+        title="Libro de Matrimonios"
+        columns={columns}
+        data={filteredMatrimonios}
+        loading={loading}
+        emptyMessage="No se encontraron matrimonios registrados."
+        defaultPageSize={20}
+      />
 
       {/* Modal Inscripción Matrimonio */}
       {isCreateOpen && (

@@ -2,6 +2,9 @@ import React from 'react';
 import { ClipboardList, User, Clock } from 'lucide-react';
 import type { AuditLog } from '../domain/types';
 import { FeatureHeader } from '../components/common/FeatureHeader';
+import { FeatureTable } from '../components/common/FeatureTable';
+import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
+import { useState } from 'react';
 
 export const AuditoriaFeature: React.FC = () => {
   const logs: AuditLog[] = [
@@ -54,6 +57,62 @@ export const AuditoriaFeature: React.FC = () => {
     LECTURA: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns = [
+    {
+      header: 'Fecha y Hora',
+      render: (log: AuditLog) => (
+        <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-semibold">
+          <Clock className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
+          {log.fecha_hora}
+        </span>
+      ),
+    },
+    {
+      header: 'Usuario',
+      render: (log: AuditLog) => (
+        <span className="font-bold flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
+          {log.usuario_nombre}
+        </span>
+      ),
+    },
+    {
+      header: 'Acción',
+      render: (log: AuditLog) => (
+        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${accionColor[log.accion] || ''}`}>
+          {log.accion}
+        </span>
+      ),
+    },
+    {
+      header: 'Modelo Afectado',
+      render: (log: AuditLog) => (
+        <span className="font-semibold uppercase">{log.modelo_afectado}</span>
+      ),
+    },
+    {
+      header: 'Detalle (JSONB)',
+      render: (log: AuditLog) => (
+        <code className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-slate-600 dark:text-slate-300 block max-w-xs truncate">
+          {log.detalle_json}
+        </code>
+      ),
+    },
+  ];
+
+  // Client-side search filtering
+  const filteredLogs = logs.filter((log) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      log.usuario_nombre.toLowerCase().includes(term) ||
+      log.accion.toLowerCase().includes(term) ||
+      log.modelo_afectado.toLowerCase().includes(term) ||
+      log.detalle_json.toLowerCase().includes(term)
+    );
+  });
+
   return (
     <div className="space-y-4">
       <FeatureHeader
@@ -62,47 +121,22 @@ export const AuditoriaFeature: React.FC = () => {
         icon={ClipboardList}
       />
 
-      {/* Timeline Table */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-blue-50/70 dark:bg-slate-800/80 text-blue-900 dark:text-slate-300 font-semibold uppercase tracking-wider">
-              <tr>
-                <th className="py-2.5 px-3 rounded-l-xl">Fecha y Hora</th>
-                <th className="py-2.5 px-3">Usuario</th>
-                <th className="py-2.5 px-3">Acción</th>
-                <th className="py-2.5 px-3">Modelo Afectado</th>
-                <th className="py-2.5 px-3 rounded-r-xl">Detalle (JSONB)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-blue-50 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200">
-              {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="py-2.5 px-3 text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                    {log.fecha_hora}
-                  </td>
-                  <td className="py-2.5 px-3 font-bold flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                    {log.usuario_nombre}
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${accionColor[log.accion] || ''}`}>
-                      {log.accion}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3 font-semibold uppercase">{log.modelo_afectado}</td>
-                  <td className="py-2.5 px-3">
-                    <code className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-slate-600 dark:text-slate-300 block max-w-xs truncate">
-                      {log.detalle_json}
-                    </code>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Reusable Search Filters */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="BUSCAR POR USUARIO, ACCIÓN O DETALLES..."
+      />
+
+      {/* Reusable Data Table */}
+      <FeatureTable
+        title="Bitácora de Eventos"
+        columns={columns}
+        data={filteredLogs}
+        loading={false}
+        emptyMessage="No se registraron logs de auditoría."
+        defaultPageSize={20}
+      />
     </div>
   );
 };

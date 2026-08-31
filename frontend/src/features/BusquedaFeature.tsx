@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, Filter, FileText, Calendar, Plus } from 'lucide-react';
+import { Search, User, Plus, FileText, Calendar } from 'lucide-react';
 import type { Persona } from '../domain/types';
 import { apiService } from '../services/api';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
+import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
+import { FeatureTable } from '../components/common/FeatureTable';
 
 export const BusquedaFeature: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -75,6 +77,61 @@ export const BusquedaFeature: React.FC = () => {
     }
   };
 
+  const columns = [
+    {
+      header: 'Nombre Completo',
+      render: (p: Persona) => (
+        <div className="flex items-center gap-2 font-semibold">
+          <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+            <User className="w-3.5 h-3.5" />
+          </div>
+          <span>{p.nombres} {p.apellido_paterno} {p.apellido_materno || ''}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Carnet (CI)',
+      render: (p: Persona) => <span>{p.ci || '—'}</span>,
+    },
+    {
+      header: 'Fecha Nacimiento',
+      render: (p: Persona) => <span>{p.fecha_nacimiento || '—'}</span>,
+    },
+    {
+      header: 'Estado',
+      render: (p: Persona) => (
+        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+          p.estado_civil === 'INACTIVO'
+            ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
+            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+        }`}>
+          {p.estado_civil || 'ACTIVO'}
+        </span>
+      ),
+    },
+    {
+      header: 'Acciones',
+      className: 'text-right',
+      render: (p: Persona) => (
+        <div className="space-x-1.5 justify-end flex">
+          <button
+            onClick={() => setSelectedPersona(p)}
+            className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-slate-800 hover:bg-blue-600 hover:text-white text-blue-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+          >
+            Ver
+          </button>
+          <button
+            onClick={() => handleToggleEstado(p)}
+            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+            title="Soft Delete / Alternar Estado"
+          >
+            Estado
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-4 sm:space-y-5">
       {/* Action Overlay & Top Alert Portals */}
@@ -96,99 +153,23 @@ export const BusquedaFeature: React.FC = () => {
         }
       />
 
-      {/* Search Bar */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
-              placeholder="EJEMPLO: MAMANI PEREZ JUAN CARLOS"
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-          </div>
-          <button
-            type="submit"
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Filter className="w-4 h-4" />
-            <span>Buscar</span>
-          </button>
-        </form>
-      </div>
+      {/* Reusable Search Filters */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="EJEMPLO: MAMANI PEREZ JUAN CARLOS"
+        onSearch={handleSearch}
+      />
 
-      {/* Results Table */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-            PERSONAS EN BASE DE DATOS ({personas.length})
-          </h3>
-        </div>
-
-        {loading ? (
-          <div className="p-6 text-center text-slate-500 dark:text-slate-400 text-xs font-semibold animate-pulse">
-            Cargando expedientes...
-          </div>
-        ) : personas.length === 0 ? (
-          <div className="p-6 text-center text-slate-500 dark:text-slate-400 text-xs font-normal">
-            No se encontraron personas registradas.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-blue-50/70 dark:bg-slate-800/80 text-blue-900 dark:text-slate-300 font-semibold uppercase tracking-wider">
-                <tr>
-                  <th className="py-2.5 px-3 rounded-l-xl">Nombre Completo</th>
-                  <th className="py-2.5 px-3">Carnet (CI)</th>
-                  <th className="py-2.5 px-3">Fecha Nacimiento</th>
-                  <th className="py-2.5 px-3">Estado</th>
-                  <th className="py-2.5 px-3 rounded-r-xl text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-blue-50 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200 uppercase">
-                {personas.map((p) => (
-                  <tr key={p.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="py-2.5 px-3 font-semibold flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                        <User className="w-3.5 h-3.5" />
-                      </div>
-                      {p.nombres} {p.apellido_paterno} {p.apellido_materno || ''}
-                    </td>
-                    <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{p.ci || '—'}</td>
-                    <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{p.fecha_nacimiento || '—'}</td>
-                    <td className="py-2.5 px-3">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        p.estado_civil === 'INACTIVO'
-                          ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                          : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                      }`}>
-                        {p.estado_civil || 'ACTIVO'}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-right space-x-1.5">
-                      <button
-                        onClick={() => setSelectedPersona(p)}
-                        className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-slate-800 hover:bg-blue-600 hover:text-white text-blue-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
-                      >
-                        Ver
-                      </button>
-                      <button
-                        onClick={() => handleToggleEstado(p)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
-                        title="Soft Delete / Alternar Estado"
-                      >
-                        Estado
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Reusable Data Table */}
+      <FeatureTable
+        title={`Personas Registradas`}
+        columns={columns}
+        data={personas}
+        loading={loading}
+        emptyMessage="No se encontraron personas registradas."
+        defaultPageSize={20}
+      />
 
       {/* Modal Registro Persona */}
       {isCreateOpen && (
