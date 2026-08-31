@@ -7,6 +7,7 @@ import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
 import { FeatureTable } from '../components/common/FeatureTable';
 import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
+import { StatusToggleButton, EditButton } from '../components/common/TableButtons';
 import { apiService } from '../services/api';
 
 const ROLES = ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO', 'FELIGRES'];
@@ -489,31 +490,18 @@ export const UsuariosFeature: React.FC = () => {
     {
       header: 'Estado',
       render: (u: UserAccount) => (
-        <button
-          onClick={() => handleToggleActive(u)}
-          title={u.is_active ? 'Clic para Desactivar' : 'Clic para Activar'}
-          className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all hover:scale-105 cursor-pointer ${
-            u.is_active
-              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900'
-              : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 hover:bg-rose-200 dark:hover:bg-rose-900'
-          }`}
-        >
-          {u.is_active ? 'ACTIVO' : 'INACTIVO'}
-        </button>
+        <StatusToggleButton
+          isActive={u.is_active}
+          onToggle={() => handleToggleActive(u)}
+        />
       ),
     },
     {
       header: 'Acciones',
-      className: 'text-right',
+      className: 'text-center',
       render: (u: UserAccount) => (
-        <div className="flex items-center justify-end gap-1.5">
-          <button
-            onClick={() => handleEdit(u)}
-            title="Editar Usuario"
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-400 text-slate-700 dark:text-slate-300 hover:text-white transition-all cursor-pointer"
-          >
-            <Edit3 className="w-4 h-4" />
-          </button>
+        <div className="flex items-center justify-center gap-1.5">
+          <EditButton onClick={() => handleEdit(u)} />
         </div>
       ),
     },
