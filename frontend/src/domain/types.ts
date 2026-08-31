@@ -114,16 +114,44 @@ export interface AuthUser {
   is_staff?: boolean;
   is_superuser?: boolean;
   capilla_asignada?: string;
+  capilla_nombre?: string;
+  role?: string;
+  foto_url?: string;
+  persona?: {
+    id: string;
+    nombres: string;
+    apellido_paterno: string;
+    apellido_materno?: string;
+    ci?: string;
+    sexo?: string;
+    telefono?: string;
+    nombre_completo?: string;
+  };
 }
 
 export interface UserAccount {
   id: string;
   username: string;
   email: string;
-  role: 'SUPERADMIN' | 'ADMINISTRADOR' | 'PARROCO' | 'RECTOR' | 'SACERDOTE' | 'SECRETARIO' | 'FELIGRES';
+  role: string;
+  capilla_asignada?: string;
   capilla_nombre?: string;
+  foto_url?: string;
   is_active: boolean;
-  created_at: string;
+  is_staff?: boolean;
+  is_superuser?: boolean;
+  date_joined?: string;
+  persona?: {
+    id: string;
+    nombres: string;
+    apellido_paterno: string;
+    apellido_materno?: string;
+    ci?: string;
+    sexo?: string;
+    telefono?: string;
+    nombre_completo?: string;
+    tipo_persona?: string;
+  };
 }
 
 export interface SystemRole {
