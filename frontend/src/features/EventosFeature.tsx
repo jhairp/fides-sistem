@@ -4,6 +4,7 @@ import type { LiturgicalEvent } from '../domain/types';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const EventosFeature: React.FC = () => {
   const [eventos, setEventos] = useState<LiturgicalEvent[]>([
@@ -77,30 +78,24 @@ export const EventosFeature: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <ActionOverlay isVisible={isVisible} type={alertType} />
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
-      {/* Header */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            Agenda Litúrgica e Intenciones de Misa
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Programación de celebraciones, misas comunitarias e intenciones por capilla.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Registrar Intención</span>
-        </button>
-      </div>
+      <FeatureHeader
+        title="AGENDA LITÚRGICA E INTENCIONES DE MISA"
+        description="Programación de celebraciones, misas comunitarias e intenciones por capilla."
+        icon={Calendar}
+        action={
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>REGISTRAR INTENCIÓN</span>
+          </button>
+        }
+      />
 
       {/* Grid Events */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

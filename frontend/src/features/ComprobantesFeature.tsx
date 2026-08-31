@@ -5,6 +5,7 @@ import type { CertificateRequest } from '../domain/types';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const ComprobantesFeature: React.FC = () => {
   const [selectedCert] = useState<CertificateRequest>({
@@ -25,30 +26,24 @@ export const ComprobantesFeature: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <ActionOverlay isVisible={isVisible} type={alertType} />
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
-      {/* Header */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            Emisión de Certificados Sacramentales con Código QR
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Certificados oficiales de Bautismo y Matrimonio autenticados por firma digital y QR verificado.
-          </p>
-        </div>
-
-        <button
-          onClick={handlePrint}
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Printer className="w-4 h-4" />
-          <span>Imprimir Certificado</span>
-        </button>
-      </div>
+      <FeatureHeader
+        title="EMISIÓN DE CERTIFICADOS SACRAMENTALES CON CÓDIGO QR"
+        description="Certificados oficiales de Bautismo y Matrimonio autenticados por firma digital y QR verificado."
+        icon={FileText}
+        action={
+          <button
+            onClick={handlePrint}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Printer className="w-4 h-4" />
+            <span>IMPRIMIR CERTIFICADO</span>
+          </button>
+        }
+      />
 
       {/* Official Certificate Paper Preview */}
       <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-slate-800 rounded-3xl shadow-xl space-y-6 text-slate-900 dark:text-slate-100 uppercase">

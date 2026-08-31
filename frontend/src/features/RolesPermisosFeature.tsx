@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, CheckCircle2 } from 'lucide-react';
 import type { SystemRole } from '../domain/types';
+import { FeatureHeader } from '../components/common/FeatureHeader';
 
 export const RolesPermisosFeature: React.FC = () => {
   const roles: (SystemRole & { permisos: string[] })[] = [
@@ -82,17 +83,12 @@ export const RolesPermisosFeature: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          Matriz de Roles y Grupos de Permisos
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Estructura jerárquica de los 7 Grupos de Permisos nativos de Django en FidesSystem.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <FeatureHeader
+        title="MATRIZ DE ROLES Y GRUPOS DE PERMISOS"
+        description="Estructura jerárquica de los 7 Grupos de Permisos nativos de Django en FidesSystem."
+        icon={ShieldCheck}
+      />
 
       {/* Roles Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
