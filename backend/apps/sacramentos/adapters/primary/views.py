@@ -39,6 +39,11 @@ class CapillaViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['nombre', 'ciudad']
 
+    def paginate_queryset(self, queryset):
+        if self.request.query_params.get('all') == 'true':
+            return None
+        return super().paginate_queryset(queryset)
+
 
 class PersonaViewSet(viewsets.ModelViewSet):
     queryset = PersonaModel.objects.all().order_by('apellido_paterno', 'apellido_materno', 'nombres', 'id')

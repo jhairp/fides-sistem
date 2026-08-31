@@ -53,7 +53,7 @@ export const apiService = {
     return res.data.results || res.data;
   },
   getCapillas: async (): Promise<Capilla[]> => {
-    const res = await apiClient.get('/sacramentos/capillas/');
+    const res = await apiClient.get('/sacramentos/capillas/?all=true');
     return res.data.results || res.data;
   },
 
@@ -109,5 +109,32 @@ export const apiService = {
     };
     const res = await apiClient.post('/sacramentos/notas-marginales/', upperNota);
     return res.data;
-  }
+  },
+
+  // ======= Usuarios =======
+  getUsers: async (search?: string) => {
+    const params = search ? { search } : {};
+    const res = await apiClient.get('/auth/users/', { params });
+    return res.data.results || res.data;
+  },
+  createUser: async (data: Record<string, unknown>) => {
+    const res = await apiClient.post('/auth/users/', data);
+    return res.data;
+  },
+  updateUser: async (id: string, data: Record<string, unknown>) => {
+    const res = await apiClient.patch(`/auth/users/${id}/`, data);
+    return res.data;
+  },
+  toggleUserActive: async (id: string) => {
+    const res = await apiClient.post(`/auth/users/${id}/toggle_active/`);
+    return res.data;
+  },
+  getCurrentUser: async () => {
+    const res = await apiClient.get('/auth/users/me/');
+    return res.data;
+  },
+  changePassword: async (current_password: string, new_password: string) => {
+    const res = await apiClient.post('/auth/users/change_password/', { current_password, new_password });
+    return res.data;
+  },
 };

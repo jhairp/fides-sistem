@@ -8,6 +8,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (username: string, password_hash: string) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,24 +37,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await apiService.getCurrentUser();
+      setUser(currentUser);
+      localStorage.setItem('user', JSON.stringify(currentUser));
+    } catch (err) {
+      console.error('Error al obtener perfil del usuario:', err);
+    }
+  };
+
   const login = async (username: string, password_hash: string) => {
     const data = await apiService.login(username, password_hash);
     const accessToken = data.access;
     setToken(accessToken);
     localStorage.setItem('token', accessToken);
 
-    const currentUser: AuthUser = {
-      username: username,
-      email: `${username.toLowerCase()}@fidessystem.org`,
-      is_staff: true,
-      is_superuser: username.toLowerCase() === 'superadmin'
-    };
-    setUser(currentUser);
-    localStorage.setItem('user', JSON.stringify(currentUser));
+    // Cargar el perfil real del usuario desde el backend
+    try {
+      const currentUser = await apiService.getCurrentUser();
+      setUser(currentUser);
+      localStorage.setItem('user', JSON.stringify(currentUser));
+    } catch {
+      // Fallback mínimo si /me/ falla temporalmente
+      const fallbackUser: AuthUser = {
+        username: username,
+        email: `${username.toLowerCase()}@fidessystem.org`,
+        is_staff: true,
+        is_superuser: username.toLowerCase() === 'superadmin'
+      };
+      setUser(fallbackUser);
+      localStorage.setItem('user', JSON.stringify(fallbackUser));
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

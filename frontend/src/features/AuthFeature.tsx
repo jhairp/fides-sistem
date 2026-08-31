@@ -14,7 +14,7 @@ export const AuthFeature: React.FC = () => {
     setError('');
     setLoading(true);
     try {
-      await login(username, password);
+      await login(username.trim(), password.trim());
     } catch (err: any) {
       setError('Credenciales inválidas. Verifica tu usuario y contraseña.');
     } finally {
@@ -47,7 +47,7 @@ export const AuthFeature: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div>
             <label className="text-[10px] font-black text-slate-400 uppercase block mb-1.5">
-              NOMBRE DE USUARIO
+              USUARIO O CORREO ELECTRÓNICO
             </label>
             <div className="relative">
               <User className="w-5 h-5 absolute left-3.5 top-3 text-slate-500" />
@@ -57,6 +57,7 @@ export const AuthFeature: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="juanperez o juan@gmail.com"
               />
             </div>
           </div>

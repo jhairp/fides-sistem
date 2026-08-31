@@ -20,6 +20,7 @@ urlpatterns = [
     # JWT Authentication Endpoints
     path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/', include('apps.authentication.urls')),
 
     # Módulo Hexagonal de Sacramentos API
     path('api/sacramentos/', include('apps.sacramentos.urls')),
