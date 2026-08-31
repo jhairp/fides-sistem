@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Search,
@@ -15,33 +16,19 @@ import {
   X
 } from 'lucide-react';
 
-export type ActiveTab =
-  | 'dashboard'
-  | 'busqueda'
-  | 'bautismos'
-  | 'matrimonios'
-  | 'notas'
-  | 'ocr'
-  | 'capillas'
-  | 'usuarios'
-  | 'roles'
-  | 'eventos'
-  | 'comprobantes'
-  | 'auditoria';
-
 interface SidebarProps {
-  activeTab: ActiveTab;
-  setActiveTab: (tab: ActiveTab) => void;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  activeTab,
-  setActiveTab,
   isMobileMenuOpen,
   setIsMobileMenuOpen
 }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentPath = location.pathname.substring(1) || 'dashboard';
+
   const menuSections = [
     {
       label: 'SACRAMENTOS',
@@ -72,8 +59,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
   ];
 
-  const handleSelectTab = (tab: ActiveTab) => {
-    setActiveTab(tab);
+  const handleSelectTab = (tab: string) => {
+    navigate(`/${tab}`);
     setIsMobileMenuOpen(false);
   };
 
@@ -100,11 +87,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeTab === item.id;
+                const isActive = currentPath === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => handleSelectTab(item.id as ActiveTab)}
+                    onClick={() => handleSelectTab(item.id)}
                     className={`w-full flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-all cursor-pointer ${
                       isActive
                         ? 'bg-blue-600 text-white font-bold shadow-sm'

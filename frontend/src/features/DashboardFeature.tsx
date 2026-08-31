@@ -1,12 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookOpen, Heart, Building2, Users, ScanLine, FileText, ArrowUpRight, LayoutDashboard } from 'lucide-react';
-import type { ActiveTab } from '../components/Sidebar';
 
-interface DashboardProps {
-  setActiveTab: (tab: ActiveTab) => void;
-}
-
-export const DashboardFeature: React.FC<DashboardProps> = ({ setActiveTab }) => {
+export const DashboardFeature: React.FC = () => {
+  const navigate = useNavigate();
   const stats = [
     { label: 'Capillas Registradas', value: '5', icon: Building2, color: 'from-blue-600 to-blue-700' },
     { label: 'Partidas Bautismo', value: '1,248', icon: BookOpen, color: 'from-blue-500 to-indigo-600' },
@@ -39,7 +36,7 @@ export const DashboardFeature: React.FC<DashboardProps> = ({ setActiveTab }) => 
           </p>
         </div>
         <button
-          onClick={() => setActiveTab('ocr')}
+          onClick={() => navigate('/ocr')}
           className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-bold text-[11px] uppercase tracking-wide transition-all shadow-sm cursor-pointer"
         >
           <ScanLine className="w-3.5 h-3.5" />
@@ -82,7 +79,7 @@ export const DashboardFeature: React.FC<DashboardProps> = ({ setActiveTab }) => 
               Capillas bajo la Jurisdicción Parroquial
             </h3>
             <button
-              onClick={() => setActiveTab('capillas')}
+              onClick={() => navigate('/capillas')}
               className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 uppercase cursor-pointer"
             >
               Ver Todas <ArrowUpRight className="w-3 h-3" />
@@ -122,7 +119,7 @@ export const DashboardFeature: React.FC<DashboardProps> = ({ setActiveTab }) => 
             </h3>
             <div className="space-y-2">
               <button
-                onClick={() => setActiveTab('bautismos')}
+                onClick={() => navigate('/bautismos')}
                 className="w-full text-left p-3 rounded-xl bg-blue-50/50 dark:bg-slate-800/50 hover:bg-blue-100 dark:hover:bg-slate-800 border border-blue-100 dark:border-slate-700/60 transition-all flex items-center justify-between cursor-pointer"
               >
                 <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 uppercase">
@@ -132,7 +129,7 @@ export const DashboardFeature: React.FC<DashboardProps> = ({ setActiveTab }) => 
               </button>
 
               <button
-                onClick={() => setActiveTab('matrimonios')}
+                onClick={() => navigate('/matrimonios')}
                 className="w-full text-left p-3 rounded-xl bg-blue-50/50 dark:bg-slate-800/50 hover:bg-blue-100 dark:hover:bg-slate-800 border border-blue-100 dark:border-slate-700/60 transition-all flex items-center justify-between cursor-pointer"
               >
                 <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 uppercase">
@@ -142,7 +139,7 @@ export const DashboardFeature: React.FC<DashboardProps> = ({ setActiveTab }) => 
               </button>
 
               <button
-                onClick={() => setActiveTab('notas')}
+                onClick={() => navigate('/notas')}
                 className="w-full text-left p-3 rounded-xl bg-blue-50/50 dark:bg-slate-800/50 hover:bg-blue-100 dark:hover:bg-slate-800 border border-blue-100 dark:border-slate-700/60 transition-all flex items-center justify-between cursor-pointer"
               >
                 <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 uppercase">
