@@ -5,6 +5,8 @@ import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
+import { FeatureTable } from '../components/common/FeatureTable';
+import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 
 export const UsuariosFeature: React.FC = () => {
   const [users, setUsers] = useState<UserAccount[]>([
@@ -70,8 +72,68 @@ export const UsuariosFeature: React.FC = () => {
     triggerAlert(nextActive ? 'activo' : 'inactivo', `USUARIO ${user.username} ${nextActive ? 'ACTIVADO' : 'DESACTIVADO (BAJA LÓGICA)'}`);
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns = [
+    {
+      header: 'Usuario',
+      render: (u: UserAccount) => (
+        <div className="flex items-center gap-2 font-bold">
+          <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <User className="w-3.5 h-3.5" />
+          </div>
+          <span>{u.username}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Correo Electrónico',
+      render: (u: UserAccount) => <span>{u.email}</span>,
+    },
+    {
+      header: 'Rol Asignado',
+      render: (u: UserAccount) => (
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+          {u.role}
+        </span>
+      ),
+    },
+    {
+      header: 'Capilla',
+      render: (u: UserAccount) => <span>{u.capilla_nombre || '—'}</span>,
+    },
+    {
+      header: 'Estado',
+      render: (u: UserAccount) => (
+        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+          u.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
+        }`}>
+          {u.is_active ? 'ACTIVO' : 'INACTIVO'}
+        </span>
+      ),
+    },
+    {
+      header: 'Acciones',
+      className: 'text-right',
+      render: (u: UserAccount) => (
+        <button
+          onClick={() => handleToggleActive(u)}
+          className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+        >
+          {u.is_active ? 'Desactivar' : 'Activar'}
+        </button>
+      ),
+    },
+  ];
+
+  // Client-side search filtering
+  const filteredUsers = users.filter((u) => {
+    const term = searchTerm.toLowerCase();
+    return u.username.toLowerCase().includes(term) || u.email.toLowerCase().includes(term) || u.role.toLowerCase().includes(term);
+  });
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <ActionOverlay isVisible={isVisible} type={alertType} />
       <TopAlert show={isVisible} type={alertType} message={alertMessage} />
 
@@ -90,57 +152,22 @@ export const UsuariosFeature: React.FC = () => {
         }
       />
 
-      {/* Table */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-blue-50/70 dark:bg-slate-800/80 text-blue-900 dark:text-slate-300 font-semibold uppercase tracking-wider">
-              <tr>
-                <th className="py-2.5 px-3 rounded-l-xl">Usuario</th>
-                <th className="py-2.5 px-3">Correo Electrónico</th>
-                <th className="py-2.5 px-3">Rol Asignado</th>
-                <th className="py-2.5 px-3">Capilla</th>
-                <th className="py-2.5 px-3">Estado</th>
-                <th className="py-2.5 px-3 rounded-r-xl text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-blue-50 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200">
-              {users.map((u) => (
-                <tr key={u.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="py-2.5 px-3 font-bold flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                      <User className="w-3.5 h-3.5" />
-                    </div>
-                    {u.username}
-                  </td>
-                  <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{u.email}</td>
-                  <td className="py-2.5 px-3">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                      {u.role}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300">{u.capilla_nombre}</td>
-                  <td className="py-2.5 px-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      u.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                    }`}>
-                      {u.is_active ? 'ACTIVO' : 'INACTIVO'}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3 text-right">
-                    <button
-                      onClick={() => handleToggleActive(u)}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
-                    >
-                      {u.is_active ? 'Desactivar' : 'Activar'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Reusable Search Filters */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="BUSCAR POR NOMBRE, CORREO O ROL..."
+      />
+
+      {/* Reusable Data Table */}
+      <FeatureTable
+        title="Usuarios Registrados"
+        columns={columns}
+        data={filteredUsers}
+        loading={false}
+        emptyMessage="No se encontraron usuarios registrados."
+        defaultPageSize={20}
+      />
 
       {/* Modal Crear Usuario */}
       {isCreateOpen && (

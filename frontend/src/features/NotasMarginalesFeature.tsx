@@ -6,6 +6,8 @@ import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
+import { FeatureTable } from '../components/common/FeatureTable';
+import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 
 export const NotasMarginalesFeature: React.FC = () => {
   const [notas, setNotas] = useState<NotaMarginal[]>([]);
@@ -62,7 +64,58 @@ export const NotasMarginalesFeature: React.FC = () => {
   const handleToggleEstadoNota = (_nota: NotaMarginal) => {
     triggerAlert('inactivo', 'NOTA MARGINAL DESACTIVADA (SOFT DELETE)');
     fetchNotas();
-  };
+  };  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns = [
+    {
+      header: 'Tipo de Anotación',
+      render: (n: NotaMarginal) => (
+        <span className="font-bold text-blue-700 dark:text-blue-400">
+          {n.tipo_anotacion}
+        </span>
+      ),
+    },
+    {
+      header: 'Descripción Decreto',
+      render: (n: NotaMarginal) => (
+        <span className="max-w-xs truncate block">{n.descripcion}</span>
+      ),
+    },
+    {
+      header: 'Parroquia / Origen',
+      render: (n: NotaMarginal) => (
+        <span>{n.parroquia_externa_nombre || 'SANTÍSIMA TRINIDAD (LOCAL)'}</span>
+      ),
+    },
+    {
+      header: 'Autorizado Por',
+      render: (n: NotaMarginal) => (
+        <span>{n.autorizado_por_nombre || n.autorizado_por}</span>
+      ),
+    },
+    {
+      header: 'Acciones',
+      className: 'text-right',
+      render: (n: NotaMarginal) => (
+        <button
+          onClick={() => handleToggleEstadoNota(n)}
+          className="px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-600 hover:text-white text-orange-700 dark:text-orange-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+        >
+          DESACTIVAR
+        </button>
+      ),
+    },
+  ];
+
+  // Client-side search filtering
+  const filteredNotas = notas.filter((n) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      n.tipo_anotacion.toLowerCase().includes(term) ||
+      n.descripcion.toLowerCase().includes(term) ||
+      (n.parroquia_externa_nombre || '').toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="space-y-4">
@@ -85,58 +138,22 @@ export const NotasMarginalesFeature: React.FC = () => {
         }
       />
 
-      {/* Table */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-            NOTAS MARGINALES REGISTRADAS ({notas.length})
-          </h3>
-        </div>
+      {/* Reusable Search Filters */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="BUSCAR POR DESCRIPCIÓN O ORIGEN..."
+      />
 
-        {loading ? (
-          <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-bold uppercase animate-pulse">
-            Cargando notas marginales...
-          </div>
-        ) : notas.length === 0 ? (
-          <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-semibold">
-            No se encontraron notas marginales registradas.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-blue-50/80 dark:bg-slate-800/80 text-blue-900 dark:text-slate-300 font-bold uppercase tracking-wider">
-                <tr>
-                  <th className="p-3 rounded-l-xl">TIPO DE ANOTACIÓN</th>
-                  <th className="p-3">DESCRIPCIÓN DECRETO</th>
-                  <th className="p-3">PARROQUIA / ORIGEN</th>
-                  <th className="p-3">AUTORIZADO POR</th>
-                  <th className="p-3 rounded-r-xl text-right">ACCIONES</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-blue-50 dark:divide-slate-800 font-semibold text-slate-800 dark:text-slate-200 uppercase">
-                {notas.map((n, idx) => (
-                  <tr key={idx} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="p-3 font-bold text-blue-700 dark:text-blue-400">
-                      {n.tipo_anotacion}
-                    </td>
-                    <td className="p-3 max-w-xs truncate">{n.descripcion}</td>
-                    <td className="p-3">{n.parroquia_externa_nombre || 'SANTÍSIMA TRINIDAD (LOCAL)'}</td>
-                    <td className="p-3">{n.autorizado_por_nombre || n.autorizado_por}</td>
-                    <td className="p-3 text-right">
-                      <button
-                        onClick={() => handleToggleEstadoNota(n)}
-                        className="px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-600 hover:text-white text-orange-700 dark:text-orange-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
-                      >
-                        DESACTIVAR
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Reusable Data Table */}
+      <FeatureTable
+        title="Notas Marginales Registradas"
+        columns={columns}
+        data={filteredNotas}
+        loading={loading}
+        emptyMessage="No se encontraron notas marginales registradas."
+        defaultPageSize={20}
+      />
 
       {/* Modal Emitir Nota Marginal */}
       {isCreateOpen && (

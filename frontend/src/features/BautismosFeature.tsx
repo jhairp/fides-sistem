@@ -7,6 +7,8 @@ import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 
 import { FeatureHeader } from '../components/common/FeatureHeader';
+import { FeatureTable } from '../components/common/FeatureTable';
+import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 
 export const BautismosFeature: React.FC = () => {
   const [bautismos, setBautismos] = useState<PartidaBautismo[]>([]);
@@ -78,6 +80,68 @@ export const BautismosFeature: React.FC = () => {
     fetchBautismos();
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns = [
+    {
+      header: 'Bautizado',
+      render: (b: PartidaBautismo) => (
+        <div className="flex items-center gap-2 font-bold">
+          <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+            <BookOpen className="w-3.5 h-3.5" />
+          </div>
+          <span>
+            {b.bautizado_detalle?.nombres || 'JUAN CARLOS'} {b.bautizado_detalle?.apellido_paterno || 'MAMANI PEREZ'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: 'Libro / Folio / Partida',
+      render: (b: PartidaBautismo) => (
+        <span>
+          L. {b.partida_detalle?.numero_folio || 1} / F. {b.partida_detalle?.numero_folio || 1} / P. {b.partida_detalle?.numero_partida || 1}
+        </span>
+      ),
+    },
+    {
+      header: 'Padres',
+      render: (b: PartidaBautismo) => (
+        <span>
+          {b.padre || 'PADRE NO REGISTRADO'} / {b.madre || 'MADRE NO REGISTRADA'}
+        </span>
+      ),
+    },
+    {
+      header: 'Estado Partida',
+      render: (b: PartidaBautismo) => (
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          {b.partida_detalle?.estado_partida || 'ACTIVA'}
+        </span>
+      ),
+    },
+    {
+      header: 'Acciones',
+      className: 'text-right',
+      render: (b: PartidaBautismo) => (
+        <button
+          onClick={() => handleAnularBautismo(b)}
+          className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 hover:text-white text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
+          title="Anular Partida (Soft Delete)"
+        >
+          ANULAR
+        </button>
+      ),
+    },
+  ];
+
+  // Client-side search filtering for demonstration / full function
+  const filteredBautismos = bautismos.filter((b) => {
+    const term = searchTerm.toLowerCase();
+    const name = `${b.bautizado_detalle?.nombres} ${b.bautizado_detalle?.apellido_paterno}`.toLowerCase();
+    return name.includes(term) || b.padre?.toLowerCase().includes(term) || b.madre?.toLowerCase().includes(term);
+  });
+
   return (
     <div className="space-y-4">
       {/* Portals */}
@@ -100,66 +164,22 @@ export const BautismosFeature: React.FC = () => {
         }
       />
 
-      {/* Table */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-            LIBRO DE BAUTISMOS ({bautismos.length})
-          </h3>
-        </div>
+      {/* Reusable Search Filters */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="BUSCAR POR NOMBRE O PADRES..."
+      />
 
-        {loading ? (
-          <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-bold uppercase animate-pulse">
-            Cargando libro de bautismos...
-          </div>
-        ) : bautismos.length === 0 ? (
-          <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-semibold">
-            No se encontraron partidas registradas en el libro actual.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-blue-50/80 dark:bg-slate-800/80 text-blue-900 dark:text-slate-300 font-bold uppercase tracking-wider">
-                <tr>
-                  <th className="p-3 rounded-l-xl">BAUTIZADO</th>
-                  <th className="p-3">LIBRO / FOLIO / PARTIDA</th>
-                  <th className="p-3">PADRES</th>
-                  <th className="p-3">ESTADO PARTIDA</th>
-                  <th className="p-3 rounded-r-xl text-right">ACCIONES</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-blue-50 dark:divide-slate-800 font-semibold text-slate-800 dark:text-slate-200 uppercase">
-                {bautismos.map((b, idx) => (
-                  <tr key={idx} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="p-3 font-bold flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                        <BookOpen className="w-4 h-4" />
-                      </div>
-                      {b.bautizado_detalle?.nombres || 'JUAN CARLOS'} {b.bautizado_detalle?.apellido_paterno || 'MAMANI PEREZ'}
-                    </td>
-                    <td className="p-3">L. {b.partida_detalle?.numero_folio || 1} / F. {b.partida_detalle?.numero_folio || 1} / P. {b.partida_detalle?.numero_partida || 1}</td>
-                    <td className="p-3">{b.padre || 'PADRE NO REGISTRADO'} / {b.madre || 'MADRE NO REGISTRADA'}</td>
-                    <td className="p-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                        {b.partida_detalle?.estado_partida || 'ACTIVA'}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right space-x-2">
-                      <button
-                        onClick={() => handleAnularBautismo(b)}
-                        className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 hover:text-white text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase transition-all cursor-pointer"
-                        title="Anular Partida (Soft Delete)"
-                      >
-                        ANULAR
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Reusable Data Table */}
+      <FeatureTable
+        title="Libro de Bautismos"
+        columns={columns}
+        data={filteredBautismos}
+        loading={loading}
+        emptyMessage="No se encontraron partidas registradas en el libro actual."
+        defaultPageSize={20}
+      />
 
       {/* Modal Registro Bautismo */}
       {isCreateOpen && (
