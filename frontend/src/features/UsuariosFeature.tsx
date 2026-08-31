@@ -405,6 +405,9 @@ export const UsuariosFeature: React.FC = () => {
   const [editUser, setEditUser] = useState<UserAccount | null>(null);
   const { isVisible, alertType, alertMessage, triggerAlert } = useActionAlert();
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterRole, setFilterRole] = useState('');
+  const [filterCapilla, setFilterCapilla] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -510,12 +513,18 @@ export const UsuariosFeature: React.FC = () => {
   // Filtrado local del lado del cliente
   const filteredUsers = users.filter((u) => {
     const term = searchTerm.toLowerCase();
-    return (
+    
+    // El buscador de texto YA NO busca por Rol o Estado, solo por texto libre
+    const matchesSearch =
       u.username.toLowerCase().includes(term) ||
       u.email.toLowerCase().includes(term) ||
-      (u.role || '').toLowerCase().includes(term) ||
-      (u.persona?.nombre_completo || '').toLowerCase().includes(term)
-    );
+      (u.persona?.nombre_completo || '').toLowerCase().includes(term);
+
+    const matchesRole = filterRole ? u.role === filterRole : true;
+    const matchesCapilla = filterCapilla ? u.capilla_asignada === filterCapilla : true;
+    const matchesStatus = filterStatus ? (filterStatus === 'ACTIVO' ? u.is_active : !u.is_active) : true;
+
+    return matchesSearch && matchesRole && matchesCapilla && matchesStatus;
   });
 
   return (
@@ -538,11 +547,34 @@ export const UsuariosFeature: React.FC = () => {
         }
       />
 
-      {/* Barra de búsqueda */}
+      {/* Barra de búsqueda con filtros avanzados */}
       <FeatureSearchFilters
         searchTerm={searchTerm}
         onSearchTermChange={setSearchTerm}
-        placeholder="BUSCAR POR NOMBRE, CORREO, ROL O PERSONA..."
+        placeholder="BUSCAR POR NOMBRE, CORREO O PERSONA..."
+        selectFilters={[
+          {
+            value: filterStatus,
+            onChange: setFilterStatus,
+            placeholder: 'TODOS LOS ESTADOS',
+            options: [
+              { label: 'ACTIVOS', value: 'ACTIVO' },
+              { label: 'INACTIVOS', value: 'INACTIVO' }
+            ],
+          },
+          {
+            value: filterRole,
+            onChange: setFilterRole,
+            placeholder: 'TODOS LOS ROLES',
+            options: ROLES.map((role) => ({ label: role, value: role })),
+          },
+          {
+            value: filterCapilla,
+            onChange: setFilterCapilla,
+            placeholder: 'TODAS LAS CAPILLAS',
+            options: capillas.map((c) => ({ label: c.nombre, value: c.id })),
+          }
+        ]}
       />
 
       {/* Tabla de Usuarios */}
