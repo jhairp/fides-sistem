@@ -33,7 +33,31 @@ Used primarily in the `render` functions of table columns.
   <EditButton onClick={() => handleEdit(item)} title="Editar Registro" />
   ```
 
+### 2. Search and Advanced Filters (`frontend/src/components/common/FeatureSearchFilters.tsx`)
+
+Always use this component for table filtering instead of building a new search bar. It supports both a text search and an array of dropdown selects.
+
+- **`FeatureSearchFilters`**:
+  ```tsx
+  import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
+  // Usage:
+  <FeatureSearchFilters
+    searchTerm={searchTerm}
+    onSearchTermChange={setSearchTerm}
+    placeholder="BUSCAR..."
+    selectFilters={[
+      {
+        value: filterStatus,
+        onChange: setFilterStatus,
+        placeholder: 'TODOS LOS ESTADOS',
+        options: [{ label: 'ACTIVOS', value: 'ACTIVO' }, { label: 'INACTIVOS', value: 'INACTIVO' }]
+      }
+    ]}
+  />
+  ```
+
 ## General Rules
 1. Never hardcode repetitive Tailwind styling for basic action buttons in tables. Import them from `TableButtons.tsx`.
 2. Center your "Acciones" columns. (`className: 'text-center'` and `justify-center` for the cell flexbox).
 3. If a new generic action button is created (e.g. Delete, View Details), add it to `TableButtons.tsx` and export it instead of making it unique to one file.
+4. **Search Logic:** When using `FeatureSearchFilters`, do NOT include fields in the general text search (`searchTerm`) if they already have a dedicated dropdown filter (`selectFilters`). For example, if you have a dropdown for "Role" or "Status", the text search should only check names, emails, or descriptions, not roles or statuses.
