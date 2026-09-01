@@ -7,7 +7,8 @@ import type {
   PartidaBase,
   PartidaBautismo,
   PartidaMatrimonio,
-  NotaMarginal
+  NotaMarginal,
+  Rol
 } from '../domain/types';
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -135,6 +136,36 @@ export const apiService = {
   },
   changePassword: async (current_password: string, new_password: string) => {
     const res = await apiClient.post('/auth/users/change_password/', { current_password, new_password });
+    return res.data;
+  },
+
+  // ======= Roles =======
+  getRoles: async (): Promise<Rol[]> => {
+    const res = await apiClient.get('/roles/');
+    return res.data;
+  },
+  getRol: async (id: number): Promise<Rol> => {
+    const res = await apiClient.get(`/roles/${id}/`);
+    return res.data;
+  },
+  createRol: async (rol: Omit<Rol, 'id'>): Promise<Rol> => {
+    const upperRol = {
+      ...rol,
+      codigo: rol.codigo.toUpperCase(),
+      nombre: rol.nombre.toUpperCase(),
+      descripcion: rol.descripcion.toUpperCase(),
+    };
+    const res = await apiClient.post('/roles/', upperRol);
+    return res.data;
+  },
+  updateRol: async (id: number, rol: Partial<Rol>): Promise<Rol> => {
+    const upperRol = {
+      ...rol,
+      ...(rol.codigo ? { codigo: rol.codigo.toUpperCase() } : {}),
+      ...(rol.nombre ? { nombre: rol.nombre.toUpperCase() } : {}),
+      ...(rol.descripcion ? { descripcion: rol.descripcion.toUpperCase() } : {}),
+    };
+    const res = await apiClient.put(`/roles/${id}/`, upperRol);
     return res.data;
   },
 };

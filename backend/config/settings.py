@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # Local Hexagonal Apps
     'apps.authentication',
     'apps.sacramentos',
+    'apps.roles',
 ]
 
 # User Custom Model
