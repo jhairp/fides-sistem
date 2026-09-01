@@ -154,11 +154,11 @@ export interface UserAccount {
   };
 }
 
-export interface SystemRole {
-  id: string;
-  name: 'SUPERADMIN' | 'ADMINISTRADOR' | 'PARROCO' | 'RECTOR' | 'SACERDOTE' | 'SECRETARIO' | 'FELIGRES';
-  description: string;
-  permissions_count: number;
+export interface Rol {
+  id: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string;
 }
 
 export interface LiturgicalEvent {

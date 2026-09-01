@@ -24,4 +24,7 @@ urlpatterns = [
 
     # Módulo Hexagonal de Sacramentos API
     path('api/sacramentos/', include('apps.sacramentos.urls')),
+    
+    # Módulo Hexagonal de Roles API
+    path('api/', include('apps.roles.urls')),
 ]

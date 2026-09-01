@@ -12,7 +12,7 @@ import { NotasMarginalesFeature } from './features/NotasMarginalesFeature';
 import { CapillasFeature } from './features/CapillasFeature';
 import { OCRFeature } from './features/OCRFeature';
 import { UsuariosFeature } from './features/UsuariosFeature';
-import { RolesPermisosFeature } from './features/RolesPermisosFeature';
+import { RolesFeature } from './features/RolesFeature';
 import { EventosFeature } from './features/EventosFeature';
 import { ComprobantesFeature } from './features/ComprobantesFeature';
 import { AuditoriaFeature } from './features/AuditoriaFeature';
@@ -50,7 +50,7 @@ const MainLayout: React.FC = () => {
             <Route path="/ocr" element={<OCRFeature />} />
             <Route path="/capillas" element={<CapillasFeature />} />
             <Route path="/usuarios" element={<UsuariosFeature />} />
-            <Route path="/roles" element={<RolesPermisosFeature />} />
+            <Route path="/roles" element={<RolesFeature />} />
             <Route path="/eventos" element={<EventosFeature />} />
             <Route path="/comprobantes" element={<ComprobantesFeature />} />
             <Route path="/auditoria" element={<AuditoriaFeature />} />
