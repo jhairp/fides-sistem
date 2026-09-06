@@ -7,6 +7,9 @@ class User(AbstractUser):
     Modelo de usuario personalizado para FidesSystem heredando de AbstractUser de Django.
     Permite integración nativa con django.contrib.auth, Groups y Permissions.
     """
+    first_name = None
+    last_name = None
+
     persona = models.ForeignKey(
         'sacramentos.PersonaModel',
         on_delete=models.SET_NULL,
