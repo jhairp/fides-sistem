@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldCheck, Plus } from 'lucide-react';
+import { ShieldCheck, Plus, Edit3 } from 'lucide-react';
 import { apiService } from '../services/api';
 import type { Rol } from '../domain/types';
 import { EditButton } from '../components/common/TableButtons';
@@ -104,6 +104,9 @@ export const RolesFeature: React.FC = () => {
     },
   ];
 
+  const labelClass = "block text-[10px] font-bold text-slate-400 uppercase mb-1";
+  const inputClass = "w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase outline-none transition-all";
+
   return (
     <div className="space-y-4">
       <ActionOverlay isVisible={isVisible} type={alertType} message={alertMessage} />
@@ -123,87 +126,97 @@ export const RolesFeature: React.FC = () => {
         }
       />
 
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-        <FeatureSearchFilters
-          searchTerm={searchTerm}
-          onSearchTermChange={setSearchTerm}
-          placeholder="BUSCAR POR CÓDIGO O NOMBRE..."
-        />
-      </div>
+      {/* Se eliminó el div contenedor para que los filtros se vean exactamente como en UsuariosFeature */}
+      <FeatureSearchFilters
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        placeholder="BUSCAR POR CÓDIGO O NOMBRE..."
+      />
 
       <FeatureTable
+        title="Roles Registrados"
         columns={columns}
         data={filteredRoles}
         loading={loading}
-        emptyMessage="NO SE ENCONTRARON ROLES REGISTRADOS."
+        emptyMessage="No se encontraron roles registrados."
+        defaultPageSize={20}
       />
 
-      {/* Form Modal */}
+      {/* Form Modal idéntico al de UsuariosFeature */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-800">
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 uppercase">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-xl space-y-4">
+            
+            {/* Header del Modal */}
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                {editingRol ? <Edit3 className="w-4 h-4 text-amber-500" /> : <Plus className="w-4 h-4 text-blue-600" />}
                 {editingRol ? 'EDITAR ROL' : 'NUEVO ROL'}
               </h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+              <button onClick={closeModal} className="text-slate-400 font-bold text-sm cursor-pointer">✕</button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6">
-              {formError && (
-                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm font-medium rounded-lg border border-red-200 dark:border-red-800/50">
-                  {formError}
-                </div>
-              )}
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">Código *</label>
-                  <input
-                    required
-                    type="text"
-                    value={formData.codigo}
-                    onChange={e => setFormData({ ...formData, codigo: e.target.value.toUpperCase() })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase font-medium dark:text-slate-100 outline-none transition-all"
-                    placeholder="EJ. SECRETARIO"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">Nombre *</label>
-                  <input
-                    required
-                    type="text"
-                    value={formData.nombre}
-                    onChange={e => setFormData({ ...formData, nombre: e.target.value.toUpperCase() })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase font-medium dark:text-slate-100 outline-none transition-all"
-                    placeholder="EJ. SECRETARIO PARROQUIAL"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">Descripción</label>
-                  <textarea
-                    rows={3}
-                    value={formData.descripcion}
-                    onChange={e => setFormData({ ...formData, descripcion: e.target.value.toUpperCase() })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase font-medium dark:text-slate-100 outline-none transition-all"
-                    placeholder="DESCRIPCIÓN DEL ROL..."
-                  />
+            {/* Mensaje de Error */}
+            {formError && (
+              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase whitespace-pre-line">
+                {formError}
+              </div>
+            )}
+            
+            {/* Formulario */}
+            <form onSubmit={handleSubmit} className="space-y-3 text-xs font-semibold">
+              <div className="border border-slate-100 dark:border-slate-800 rounded-xl p-3 space-y-3">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Datos del Rol</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className={labelClass}>Código *</label>
+                    <input
+                      required
+                      type="text"
+                      value={formData.codigo}
+                      onChange={e => setFormData({ ...formData, codigo: e.target.value.toUpperCase() })}
+                      className={inputClass}
+                      placeholder="EJ. SECRETARIO"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={labelClass}>Nombre *</label>
+                    <input
+                      required
+                      type="text"
+                      value={formData.nombre}
+                      onChange={e => setFormData({ ...formData, nombre: e.target.value.toUpperCase() })}
+                      className={inputClass}
+                      placeholder="EJ. SECRETARIO PARROQUIAL"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={labelClass}>Descripción</label>
+                    <textarea
+                      rows={3}
+                      value={formData.descripcion}
+                      onChange={e => setFormData({ ...formData, descripcion: e.target.value.toUpperCase() })}
+                      className={inputClass}
+                      placeholder="DESCRIPCIÓN DEL ROL..."
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-8 flex justify-end gap-3">
+              {/* Botones */}
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-5 py-2.5 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-colors"
+                  className="px-4 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
                 >
                   CANCELAR
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 text-white bg-blue-600 hover:bg-blue-700 rounded-xl text-sm font-bold shadow-sm transition-colors"
+                  className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold tracking-wide cursor-pointer"
                 >
                   GUARDAR
                 </button>

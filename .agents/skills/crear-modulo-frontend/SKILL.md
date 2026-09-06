@@ -22,17 +22,18 @@ Cuando el usuario solicite crear un nuevo módulo visual en React (ej. "Crea el 
 3. Importa el hook `useActionAlert` para manejar el feedback visual.
 4. Renderiza una tabla y un botón para crear nuevos registros.
 
-## Paso 4: Reutilización de Componentes UI
-1. Al armar la tabla, importa:
+## Paso 4: Reutilización Estricta de Componentes UI (CRÍTICO)
+1. **NO construyas tablas o headers manualmente.** Debes usar:
+   - `<FeatureHeader />` para el título principal y el botón de creación principal.
+   - `<FeatureTable />` para renderizar los datos. SIEMPRE pasa la prop `title="[Nombre] Registrados"` para que muestre el conteo total de registros.
+   - `<FeatureSearchFilters />` para la barra de búsqueda y filtros. NUNCA lo envuelvas en divs adicionales que alteren su diseño nativo.
+2. Al configurar las columnas de `FeatureTable`, usa los botones estandarizados:
    `import { StatusToggleButton, EditButton } from '../components/common/TableButtons';`
-2. Configura la columna "Estado" usando `<StatusToggleButton />`.
-3. Configura la columna "Acciones" (centrada) usando `<EditButton />`.
+3. Usa `import type` (ej. `import type { TableColumn } from ...`) para importar interfaces puras y evitar errores de Vite al compilar.
 
-## Paso 5: Modal de Formulario y Bajas Lógicas
-1. Crea el formulario flotante (Modal) para crear/editar.
-2. Implementa las funciones de creación/edición. En los bloques `catch`, muestra los errores específicos (HTTP 400) dentro del modal.
-3. En el bloque `then`, dispara el feedback visual de éxito.
-4. Recuerda que no existe el borrado. Solo implementa "Cambiar estado a INACTIVO/ANULADA".
+## Paso 5: Modal de Formulario y Alertas
+1. **Modal UI:** El formulario flotante debe seguir EXACTAMENTE el layout visual del proyecto (revisa `UsuariosFeature.tsx` como molde): un backdrop `bg-slate-950/60 backdrop-blur-sm`, un contenedor principal `max-w-md bg-white dark:bg-slate-900 rounded-2xl`, botones de 'CANCELAR' y 'GUARDAR' estandarizados, y los inputs con el estilo dark/light mode `bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800`.
+2. **Alertas:** Usa `const { isVisible, alertType, alertMessage, triggerAlert } = useActionAlert();` y ASEGÚRATE de montar `<ActionOverlay isVisible={isVisible} type={alertType} message={alertMessage} />` en el return del componente. Llama a `triggerAlert('creado', 'Exito')` para dispararlas.
 
 ## Paso 6: Verificación
 Asegúrate de que NO se crearon archivos `.css` (usa solo clases de Tailwind). Notifica al usuario cuando el módulo esté renderizado.

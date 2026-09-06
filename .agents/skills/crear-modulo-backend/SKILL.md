@@ -37,5 +37,7 @@ Cuando el usuario solicite crear un nuevo módulo en el backend (ej. "Crea el ba
 3. En la vista, atrapa las excepciones de dominio y devuélvelas como HTTP 400.
 4. Conecta la vista en `urls.py`.
 
-## Paso 6: Verificación
-Verifica que el código cumpla con la regla de Cero Bajas Físicas (Soft Delete). Si todo está bien, notifica al usuario que el módulo backend está listo.
+## Paso 6: Verificación y Migraciones (CRÍTICO)
+1. **Registrar App:** Si creaste una nueva App de Django, asegúrate de registrarla en `INSTALLED_APPS` en `config/settings.py` y de conectar sus URLs en `config/urls.py`.
+2. **Ejecutar Migraciones:** SIEMPRE que crees un modelo que mapee a una tabla nueva, DEBES ejecutar obligatoriamente `python manage.py makemigrations [app]` y `python manage.py migrate [app]` usando el entorno virtual (`venv/Scripts/python.exe` o `venv/bin/python`). Nunca asumas que las tablas ya existen aunque estén en el esquema SQL, ya que el esquema V2 puede no haberse aplicado por completo.
+3. Verifica que el código cumpla con la regla de Cero Bajas Físicas (Soft Delete). Si todo está bien, notifica al usuario que el módulo backend está listo.
