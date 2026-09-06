@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from .serializers import RolSerializer
+from django.contrib.auth.models import Permission
+from .serializers import RolSerializer, PermissionSerializer
 from ..secondary.repositories import DjangoRolRepository
 from ...application.use_cases import ListarRolesUseCase, ObtenerRolUseCase, CrearRolUseCase, ActualizarRolUseCase
 
@@ -47,3 +49,11 @@ class RolViewSet(viewsets.ViewSet):
             except Exception as e:
                 return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def permisos(self, request):
+        # Excluir permisos innecesarios si se desea, o devolver todos.
+        # Aquí devolvemos todos los permisos nativos ordenados por su modelo.
+        permisos = Permission.objects.all().select_related('content_type').order_by('content_type__app_label', 'codename')
+        serializer = PermissionSerializer(permisos, many=True)
+        return Response(serializer.data)
