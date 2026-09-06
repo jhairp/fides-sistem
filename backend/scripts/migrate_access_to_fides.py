@@ -561,7 +561,7 @@ def empty_stats():
 
 def run(execute):
     stats = empty_stats()
-    capilla = CapillaModel.objects.get(id=MAIN_CAPILLA_ID)
+    capilla = CapillaModel.objects.get(es_sede_principal=True)
     migration_user = get_migration_user()
 
     with transaction.atomic():
@@ -579,7 +579,7 @@ def run(execute):
 
 def dry_run_report():
     stats = empty_stats()
-    capilla = CapillaModel.objects.get(id=MAIN_CAPILLA_ID)
+    capilla = CapillaModel.objects.get(es_sede_principal=True)
     get_migration_user()
 
     stats["capilla_destino"] = str(capilla)

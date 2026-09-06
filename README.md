@@ -49,6 +49,9 @@ python manage.py reset_db
 
 # 4. Iniciar el servidor de desarrollo
 python manage.py runserver
+
+# 5. registros del santurario jesus del gran poder
+python scripts\migrate_access_to_fides.py --execute
 ```
 
 Acceso al panel administrativo: `http://127.0.0.1:8000/admin/`  
