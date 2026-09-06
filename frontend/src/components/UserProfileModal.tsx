@@ -21,7 +21,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
   const rolLabel = user.role || (user.is_superuser ? 'SUPERADMIN' : 'PERSONAL PARROQUIAL');
   const capillaLabel = user.capilla_nombre || user.persona?.nombre_completo || 'SIN ASIGNAR';
-  const personaLabel = user.persona?.nombre_completo || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username;
+  const personaLabel = user.persona?.nombre_completo || user.username;
 
   const permisosMap: Record<string, string[]> = {
     SUPERADMIN: [
