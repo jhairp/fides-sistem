@@ -154,11 +154,18 @@ export interface UserAccount {
   };
 }
 
+export interface Permiso {
+  id: number;
+  name: string;
+  codename: string;
+}
+
 export interface Rol {
   id: number;
   codigo: string;
   nombre: string;
   descripcion: string;
+  permiso_ids?: number[];
 }
 
 export interface LiturgicalEvent {

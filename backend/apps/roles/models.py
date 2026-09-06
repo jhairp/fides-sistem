@@ -5,6 +5,7 @@ class RolModel(models.Model):
     codigo = models.CharField(max_length=30, unique=True)
     nombre = models.CharField(max_length=50)
     descripcion = models.TextField(blank=True, null=True)
+    permisos = models.ManyToManyField('auth.Permission', blank=True, related_name='roles_asociados')
 
     class Meta:
         db_table = 'roles'

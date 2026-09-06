@@ -28,7 +28,8 @@ class CrearRolUseCase:
             id=None,
             codigo=datos.get('codigo', '').upper(),
             nombre=datos.get('nombre', ''),
-            descripcion=datos.get('descripcion', '')
+            descripcion=datos.get('descripcion', ''),
+            permiso_ids=datos.get('permiso_ids', [])
         )
         return self.repository.guardar(rol)
 
@@ -45,5 +46,8 @@ class ActualizarRolUseCase:
         rol_existente.codigo = datos.get('codigo', rol_existente.codigo).upper()
         rol_existente.nombre = datos.get('nombre', rol_existente.nombre)
         rol_existente.descripcion = datos.get('descripcion', rol_existente.descripcion)
+        
+        if 'permiso_ids' in datos:
+            rol_existente.permiso_ids = datos.get('permiso_ids')
         
         return self.repository.guardar(rol_existente)

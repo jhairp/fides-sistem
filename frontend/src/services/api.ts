@@ -8,7 +8,11 @@ import type {
   PartidaBautismo,
   PartidaMatrimonio,
   NotaMarginal,
-  Rol
+  AuthUser,
+  AuthResponse,
+  LoginCredentials,
+  Rol,
+  Permiso
 } from '../domain/types';
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -139,9 +143,13 @@ export const apiService = {
     return res.data;
   },
 
-  // ======= Roles =======
+  // ======= Roles y Permisos =======
   getRoles: async (): Promise<Rol[]> => {
     const res = await apiClient.get('/roles/');
+    return res.data;
+  },
+  getPermisos: async (): Promise<Permiso[]> => {
+    const res = await apiClient.get('/roles/permisos/');
     return res.data;
   },
   getRol: async (id: number): Promise<Rol> => {
