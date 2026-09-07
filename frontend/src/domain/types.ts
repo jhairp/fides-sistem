@@ -111,8 +111,7 @@ export interface AuthUser {
   email: string;
   is_staff?: boolean;
   is_superuser?: boolean;
-  capilla_asignada?: string;
-  capilla_nombre?: string;
+  capillas?: {id: string, nombre: string}[];
   role?: string;
   foto_url?: string;
   persona?: {

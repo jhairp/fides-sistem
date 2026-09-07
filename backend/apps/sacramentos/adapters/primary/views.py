@@ -33,11 +33,34 @@ class ParroquiaViewSet(viewsets.ModelViewSet):
 
 
 class CapillaViewSet(viewsets.ModelViewSet):
-    queryset = CapillaModel.objects.all().order_by('nombre')
     serializer_class = CapillaSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['nombre', 'ciudad']
+
+    def get_queryset(self):
+        qs = CapillaModel.objects.all().order_by('nombre')
+        user = self.request.user
+        
+        # Filtrado de jurisdicción horizontal para listados
+        if user.is_authenticated and not (user.is_superuser or user.groups.filter(name='ADMINISTRADOR').exists()):
+            user_capillas = user.capillas.all()
+            parroquias_jurisdiccion = [c.parroquia_id for c in user_capillas if c.es_sede_principal]
+            capillas_jurisdiccion = [c.id for c in user_capillas if not c.es_sede_principal]
+            
+            from django.db.models import Q
+            q_filters = Q()
+            if parroquias_jurisdiccion:
+                q_filters |= Q(parroquia_id__in=parroquias_jurisdiccion)
+            if capillas_jurisdiccion:
+                q_filters |= Q(id__in=capillas_jurisdiccion)
+            
+            if not q_filters:
+                qs = qs.none()
+            else:
+                qs = qs.filter(q_filters).distinct()
+                
+        return qs
 
     def paginate_queryset(self, queryset):
         if self.request.query_params.get('all') == 'true':

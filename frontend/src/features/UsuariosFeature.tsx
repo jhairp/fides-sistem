@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Users, Plus, User, Search, Edit3, Link2, UserPlus } from 'lucide-react';
 import type { UserAccount, Capilla, Persona } from '../domain/types';
 import { useActionAlert } from '../hooks/useActionAlert';
+import { useAuth } from '../hooks/useAuth';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
@@ -30,6 +31,17 @@ interface UserFormModalProps {
 
 const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSuccess, triggerAlert, capillas, editUser }) => {
   const isEditing = !!editUser;
+  const { user: currentUser } = useAuth();
+  
+  const getAvailableRoles = () => {
+    const curRole = currentUser?.role;
+    if (curRole === 'SUPERADMIN') return ROLES;
+    if (curRole === 'ADMINISTRADOR') return ROLES.filter(r => r !== 'SUPERADMIN');
+    if (curRole === 'PARROCO') return ['SACERDOTE', 'RECTOR', 'SECRETARIO'];
+    if (curRole === 'RECTOR') return ['SECRETARIO'];
+    return [];
+  };
+  const availableRoles = getAvailableRoles();
 
   // Modo: 'nueva' = crear persona nueva, 'vincular' = buscar persona existente
   const [personaMode, setPersonaMode] = useState<'nueva' | 'vincular'>('nueva');
@@ -38,8 +50,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSucces
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState(DEFAULT_PASSWORD);
-  const [role, setRole] = useState('SECRETARIO');
-  const [capillaAsignada, setCapillaAsignada] = useState('');
+  const [role, setRole] = useState(availableRoles[0] || 'SECRETARIO');
+  const [selectedCapillas, setSelectedCapillas] = useState<string[]>([]);
 
   // Campos de persona nueva
   const [nombres, setNombres] = useState('');
@@ -64,7 +76,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSucces
       setUsername(editUser.username);
       setEmail(editUser.email);
       setRole(editUser.role || 'SECRETARIO');
-      setCapillaAsignada(editUser.capilla_asignada || '');
+      setSelectedCapillas(editUser.capillas ? editUser.capillas.map(c => c.id) : []);
       setPassword('');
       if (editUser.persona) {
         setNombres(editUser.persona.nombres || '');
@@ -84,8 +96,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSucces
     setUsername('');
     setEmail('');
     setPassword(DEFAULT_PASSWORD);
-    setRole('SECRETARIO');
-    setCapillaAsignada('');
+    setRole(availableRoles[0] || 'SECRETARIO');
+    setSelectedCapillas([]);
     setNombres('');
     setApellidoPaterno('');
     setApellidoMaterno('');
@@ -118,11 +130,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSucces
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: Record<string, any> = {
+      const payload: any = {
         username: username.trim(),
         email: email.trim(),
         role,
-        capilla_asignada: capillaAsignada || null,
+        capillas: role === 'FELIGRES' ? [] : selectedCapillas,
       };
 
       if (isEditing) {
@@ -356,22 +368,32 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSucces
                 <input type="password" required={!isEditing} value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder={isEditing ? '••••••••' : DEFAULT_PASSWORD} />
               </div>
               <div>
-                <label className={labelClass}>Rol del Sistema *</label>
+                <label className={labelClass}>Rol en el Sistema</label>
                 <select value={role} onChange={(e) => setRole(e.target.value)} className={`${inputClass} font-bold`}>
-                  {ROLES.map((r) => (
+                  {availableRoles.map((r) => (
                     <option key={r} value={r}>{r}</option>
                   ))}
                 </select>
               </div>
-              <div>
-                <label className={labelClass}>Capilla Asignada</label>
-                <select value={capillaAsignada} onChange={(e) => setCapillaAsignada(e.target.value)} className={`${inputClass} font-bold`}>
-                  <option value="">— Sin asignar —</option>
-                  {capillas.map((c) => (
-                    <option key={c.id} value={c.id}>{c.nombre}</option>
-                  ))}
-                </select>
-              </div>
+              
+              {role !== 'FELIGRES' && (
+                <div>
+                  <label className={labelClass}>Capilla Asignada</label>
+                  <select 
+                    value={selectedCapillas.length > 0 ? selectedCapillas[0] : ''} 
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSelectedCapillas(val ? [val] : []);
+                    }} 
+                    className={`${inputClass} font-bold`}
+                  >
+                    <option value="">— Sin asignar —</option>
+                    {capillas.map((c) => (
+                      <option key={c.id} value={c.id}>{c.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 
@@ -408,6 +430,18 @@ export const UsuariosFeature: React.FC = () => {
   const [filterRole, setFilterRole] = useState('');
   const [filterCapilla, setFilterCapilla] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  
+  const { user: currentUser } = useAuth();
+  
+  const getAvailableRoles = () => {
+    const curRole = currentUser?.role;
+    if (curRole === 'SUPERADMIN') return ROLES;
+    if (curRole === 'ADMINISTRADOR') return ROLES.filter(r => r !== 'SUPERADMIN');
+    if (curRole === 'PARROCO') return ['SACERDOTE', 'RECTOR', 'SECRETARIO'];
+    if (curRole === 'RECTOR') return ['SECRETARIO'];
+    return [];
+  };
+  const availableRoles = getAvailableRoles();
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -487,8 +521,14 @@ export const UsuariosFeature: React.FC = () => {
       ),
     },
     {
-      header: 'Capilla',
-      render: (u: UserAccount) => <span className="text-xs">{u.capilla_nombre || '—'}</span>,
+      header: 'Capillas Asignadas',
+      render: (u: UserAccount) => (
+        <span className="text-xs">
+          {u.capillas && u.capillas.length > 0 
+            ? u.capillas.map(c => c.nombre).join(', ') 
+            : '—'}
+        </span>
+      ),
     },
     {
       header: 'Estado',
@@ -521,7 +561,7 @@ export const UsuariosFeature: React.FC = () => {
       (u.persona?.nombre_completo || '').toLowerCase().includes(term);
 
     const matchesRole = filterRole ? u.role === filterRole : true;
-    const matchesCapilla = filterCapilla ? u.capilla_asignada === filterCapilla : true;
+    const matchesCapilla = filterCapilla ? u.capillas?.some(c => c.id === filterCapilla) : true;
     const matchesStatus = filterStatus ? (filterStatus === 'ACTIVO' ? u.is_active : !u.is_active) : true;
 
     return matchesSearch && matchesRole && matchesCapilla && matchesStatus;
@@ -566,7 +606,7 @@ export const UsuariosFeature: React.FC = () => {
             value: filterRole,
             onChange: setFilterRole,
             placeholder: 'TODOS LOS ROLES',
-            options: ROLES.map((role) => ({ label: role, value: role })),
+            options: availableRoles.map((role) => ({ label: role, value: role })),
           },
           {
             value: filterCapilla,

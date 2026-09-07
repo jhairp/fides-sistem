@@ -18,6 +18,25 @@ import { ComprobantesFeature } from './features/ComprobantesFeature';
 import { AuditoriaFeature } from './features/AuditoriaFeature';
 import { AuthFeature } from './features/AuthFeature';
 
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+  const { user } = useAuth();
+  
+  if (!user) return <Navigate to="/dashboard" replace />;
+  
+  const userRole = user.role || 'FELIGRES';
+  
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const MainLayout: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,6 +44,8 @@ const MainLayout: React.FC = () => {
   if (!isAuthenticated) {
     return <AuthFeature />;
   }
+
+  const staffRoles = ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'];
 
   return (
     <div className="min-h-screen bg-[#E0EBFF] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors">
@@ -43,17 +64,20 @@ const MainLayout: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardFeature />} />
-            <Route path="/busqueda" element={<BusquedaFeature />} />
-            <Route path="/bautismos" element={<BautismosFeature />} />
-            <Route path="/matrimonios" element={<MatrimoniosFeature />} />
-            <Route path="/notas" element={<NotasMarginalesFeature />} />
-            <Route path="/ocr" element={<OCRFeature />} />
-            <Route path="/capillas" element={<CapillasFeature />} />
-            <Route path="/usuarios" element={<UsuariosFeature />} />
-            <Route path="/roles" element={<RolesFeature />} />
             <Route path="/eventos" element={<EventosFeature />} />
-            <Route path="/comprobantes" element={<ComprobantesFeature />} />
-            <Route path="/auditoria" element={<AuditoriaFeature />} />
+            
+            <Route path="/busqueda" element={<ProtectedRoute allowedRoles={staffRoles}><BusquedaFeature /></ProtectedRoute>} />
+            <Route path="/bautismos" element={<ProtectedRoute allowedRoles={staffRoles}><BautismosFeature /></ProtectedRoute>} />
+            <Route path="/matrimonios" element={<ProtectedRoute allowedRoles={staffRoles}><MatrimoniosFeature /></ProtectedRoute>} />
+            <Route path="/notas" element={<ProtectedRoute allowedRoles={staffRoles}><NotasMarginalesFeature /></ProtectedRoute>} />
+            <Route path="/ocr" element={<ProtectedRoute allowedRoles={staffRoles}><OCRFeature /></ProtectedRoute>} />
+            <Route path="/capillas" element={<ProtectedRoute allowedRoles={staffRoles}><CapillasFeature /></ProtectedRoute>} />
+            <Route path="/comprobantes" element={<ProtectedRoute allowedRoles={staffRoles}><ComprobantesFeature /></ProtectedRoute>} />
+            
+            <Route path="/usuarios" element={<ProtectedRoute allowedRoles={['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR']}><UsuariosFeature /></ProtectedRoute>} />
+            <Route path="/roles" element={<ProtectedRoute allowedRoles={['SUPERADMIN']}><RolesFeature /></ProtectedRoute>} />
+            <Route path="/auditoria" element={<ProtectedRoute allowedRoles={['SUPERADMIN', 'ADMINISTRADOR']}><AuditoriaFeature /></ProtectedRoute>} />
+            
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>

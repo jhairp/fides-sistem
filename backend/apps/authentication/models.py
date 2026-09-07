@@ -18,13 +18,11 @@ class User(AbstractUser):
         related_name='usuario_cuenta',
         help_text='Persona asociada a esta cuenta de usuario'
     )
-    capilla_asignada = models.ForeignKey(
+    capillas = models.ManyToManyField(
         'sacramentos.CapillaModel',
-        on_delete=models.SET_NULL,
-        null=True,
         blank=True,
         related_name='usuarios_asignados',
-        help_text='Capilla eclesiástica asignada para este usuario'
+        help_text='Capillas eclesiásticas asignadas para este usuario'
     )
     foto_url = models.URLField(max_length=500, blank=True, null=True)
 

@@ -14,6 +14,19 @@ class RolViewSet(viewsets.ViewSet):
     def list(self, request):
         use_case = ListarRolesUseCase(self.repository)
         roles = use_case.ejecutar()
+        
+        # Filtrado vertical de roles según el rol del usuario actual
+        user = request.user
+        if not user.is_superuser:
+            if user.groups.filter(name='ADMINISTRADOR').exists():
+                roles = [r for r in roles if r.codigo not in ['SUPERADMIN', 'ADMINISTRADOR']]
+            elif user.groups.filter(name='PARROCO').exists():
+                roles = [r for r in roles if r.codigo in ['SACERDOTE', 'RECTOR', 'SECRETARIO']]
+            elif user.groups.filter(name='RECTOR').exists():
+                roles = [r for r in roles if r.codigo == 'SECRETARIO']
+            else:
+                roles = []
+
         serializer = RolSerializer([r.__dict__ for r in roles], many=True)
         return Response(serializer.data)
 
