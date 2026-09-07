@@ -98,18 +98,19 @@ class Command(BaseCommand):
                     'is_staff': True if rol_codigo in ['SUPERADMIN', 'ADMINISTRADOR'] else False,
                     'is_superuser': True if rol_codigo == 'SUPERADMIN' else False,
                     'persona': persona,
-                    'capilla_asignada': capilla
                 }
             )
 
             if u_created:
                 user.set_password('12345678')
                 user.save()
-                
-                # Asignar grupo
-                grupo = Group.objects.get(name=rol_codigo)
-                user.groups.add(grupo)
-                
                 self.stdout.write(self.style.SUCCESS(f'Usuario {username} creado con rol {rol_codigo}.'))
+
+            if capilla:
+                user.capillas.add(capilla)
+
+            # Asignar grupo
+            grupo = Group.objects.get(name=rol_codigo)
+            user.groups.add(grupo)
 
         self.stdout.write(self.style.SUCCESS('--- POBLADO DE DATOS COMPLETADO SATISFACTORIAMENTE ---'))

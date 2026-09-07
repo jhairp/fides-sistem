@@ -16,6 +16,8 @@ import {
   X
 } from 'lucide-react';
 
+import { useAuth } from '../hooks/useAuth';
+
 interface SidebarProps {
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
@@ -27,37 +29,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const currentPath = location.pathname.substring(1) || 'dashboard';
 
   const menuSections = [
     {
       label: 'SACRAMENTOS',
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'busqueda', label: 'Búsqueda Personas', icon: Search },
-        { id: 'bautismos', label: 'Bautismos', icon: BookOpen },
-        { id: 'matrimonios', label: 'Matrimonios', icon: Heart },
-        { id: 'notas', label: 'Notas Marginales', icon: FileText },
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['*'] },
+        { id: 'busqueda', label: 'Búsqueda Personas', icon: Search, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        { id: 'bautismos', label: 'Bautismos', icon: BookOpen, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        { id: 'matrimonios', label: 'Matrimonios', icon: Heart, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        { id: 'notas', label: 'Notas Marginales', icon: FileText, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
       ],
     },
     {
       label: 'HERRAMIENTAS',
       items: [
-        { id: 'ocr', label: 'OCR (IA)', icon: ScanLine },
-        { id: 'capillas', label: 'Capillas', icon: Building2 },
-        { id: 'eventos', label: 'Eventos y Misas', icon: Calendar },
-        { id: 'comprobantes', label: 'Certificados QR', icon: QrCode },
+        { id: 'ocr', label: 'OCR (IA)', icon: ScanLine, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        { id: 'capillas', label: 'Capillas', icon: Building2, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        { id: 'eventos', label: 'Eventos y Misas', icon: Calendar, roles: ['*'] },
+        { id: 'comprobantes', label: 'Certificados QR', icon: QrCode, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
       ],
     },
     {
       label: 'ADMINISTRACIÓN',
       items: [
-        { id: 'usuarios', label: 'Usuarios', icon: Users },
-        { id: 'roles', label: 'Roles y Permisos', icon: ShieldCheck },
-        { id: 'auditoria', label: 'Auditoría', icon: ClipboardList },
+        { id: 'usuarios', label: 'Usuarios', icon: Users, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR'] },
+        { id: 'roles', label: 'Roles y Permisos', icon: ShieldCheck, roles: ['SUPERADMIN'] },
+        { id: 'auditoria', label: 'Auditoría', icon: ClipboardList, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
       ],
     },
   ];
+
+  const role = user?.role || 'FELIGRES';
+  const filteredSections = menuSections.map(section => ({
+    ...section,
+    items: section.items.filter(item => item.roles.includes('*') || item.roles.includes(role))
+  })).filter(section => section.items.length > 0);
 
   const handleSelectTab = (tab: string) => {
     navigate(`/${tab}`);
@@ -79,7 +88,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {menuSections.map((section) => (
+        {filteredSections.map((section) => (
           <div key={section.label}>
             <p className="px-3 text-[9px] font-bold text-slate-400/70 dark:text-slate-600 tracking-widest mb-1">
               {section.label}

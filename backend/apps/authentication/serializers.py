@@ -24,19 +24,22 @@ class PersonaMinimalSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     persona = PersonaMinimalSerializer(read_only=True)
     role = serializers.SerializerMethodField()
-    capilla_nombre = serializers.ReadOnlyField(source='capilla_asignada.nombre')
+    capillas = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'persona', 'role',
-            'capilla_asignada', 'capilla_nombre', 'foto_url',
-            'is_active', 'is_staff', 'is_superuser', 'date_joined'
+            'id', 'username', 'email', 'persona',
+            'role', 'capillas', 'foto_url',
+            'is_staff', 'is_superuser', 'is_active', 'date_joined'
         ]
 
     def get_role(self, obj):
         group = obj.groups.first()
         return group.name if group else None
+
+    def get_capillas(self, obj):
+        return [{"id": c.id, "nombre": c.nombre} for c in obj.capillas.all()]
 
 
 class UserCreateUpdateSerializer(serializers.ModelSerializer):
@@ -54,6 +57,11 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
         choices=['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO', 'FELIGRES'],
         write_only=True
     )
+    capillas = serializers.PrimaryKeyRelatedField(
+        queryset=CapillaModel.objects.all(),
+        many=True,
+        required=False
+    )
     password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
@@ -62,7 +70,7 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'password', 'persona_id',
             'nombres', 'apellido_paterno', 'apellido_materno', 'ci',
             'fecha_nacimiento', 'sexo', 'telefono', 'role',
-            'capilla_asignada', 'foto_url', 'is_active'
+            'capillas', 'foto_url', 'is_active'
         ]
 
     def validate(self, attrs):
@@ -94,6 +102,22 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     "nombres": "Los nombres y el apellido paterno son requeridos si no se vincula a una persona existente."
                 })
+
+        role = attrs.get('role')
+        if not role and self.instance:
+            role = self.instance.groups.first().name if self.instance.groups.exists() else None
+            
+        capillas = attrs.get('capillas', [])
+        if role == 'RECTOR' and capillas:
+            for capilla in capillas:
+                qs = User.objects.filter(groups__name='RECTOR', capillas=capilla)
+                if self.instance:
+                    qs = qs.exclude(id=self.instance.id)
+                if qs.exists():
+                    raise serializers.ValidationError({
+                        "capillas": f"La capilla {capilla.nombre} ya tiene un Rector asignado. Solo puede haber uno por capilla."
+                    })
+
         return attrs
 
     def create(self, validated_data):
@@ -108,6 +132,7 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
 
         role = validated_data.pop('role')
         password = validated_data.pop('password')
+        capillas = validated_data.pop('capillas', [])
 
         # Default profile picture location if not provided
         foto_url = validated_data.get('foto_url')
@@ -143,6 +168,9 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
             )
             user.set_password(password)
 
+            if capillas:
+                user.capillas.set(capillas)
+
             # Set roles/groups
             group, _ = Group.objects.get_or_create(name=role)
             user.groups.add(group)
@@ -168,6 +196,7 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
 
         role = validated_data.pop('role', None)
         password = validated_data.pop('password', None)
+        capillas = validated_data.pop('capillas', None)
 
         with transaction.atomic():
             if persona_id:
@@ -200,6 +229,9 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
             # Update User fields
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
+
+            if capillas is not None:
+                instance.capillas.set(capillas)
 
             if password:
                 instance.set_password(password)

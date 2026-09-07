@@ -7,10 +7,40 @@ from .serializers import UserSerializer, UserCreateUpdateSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().select_related('persona', 'capilla_asignada').order_by('username')
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email', 'persona__nombres', 'persona__apellido_paterno', 'persona__apellido_materno', 'persona__ci']
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = User.objects.all().select_related('persona').prefetch_related('capillas').order_by('username')
+        
+        if user.is_authenticated:
+            # Regla: No verse a sí mismo
+            qs = qs.exclude(id=user.id)
+            
+            # Regla de Jurisdicción Horizontal y Filtrado de Feligreses
+            if not (user.is_superuser or user.groups.filter(name='ADMINISTRADOR').exists()):
+                # No ver a feligreses a menos que se sea admin
+                qs = qs.exclude(groups__name='FELIGRES')
+
+                user_capillas = user.capillas.all()
+                parroquias_jurisdiccion = [c.parroquia_id for c in user_capillas if c.es_sede_principal]
+                capillas_jurisdiccion = [c.id for c in user_capillas if not c.es_sede_principal]
+                
+                from django.db.models import Q
+                q_filters = Q()
+                if parroquias_jurisdiccion:
+                    q_filters |= Q(capillas__parroquia_id__in=parroquias_jurisdiccion)
+                if capillas_jurisdiccion:
+                    q_filters |= Q(capillas__id__in=capillas_jurisdiccion)
+                
+                if not q_filters:
+                    qs = qs.none()
+                else:
+                    qs = qs.filter(q_filters).distinct()
+                    
+        return qs
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
