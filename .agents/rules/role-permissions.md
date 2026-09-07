@@ -30,3 +30,14 @@ Recordatorio: El borrado físico (`delete`) está estrictamente prohibido para l
    - `add`, `change`, `view` en **Sacramentos** y **Personas**. (Igual que el Sacerdote, enfocado en digitación).
 7. **FELIGRÉS:**
    - SOLO `view` en sus documentos (Personas, Partidas). No puede crear ni editar nada.
+
+## Reglas de Jurisdicción Horizontal y Capillas
+- **Multi-Capilla (ManyToMany):** Un usuario (Párroco, Rector, Sacerdote) puede estar asignado a múltiples capillas al mismo tiempo. El campo en el modelo es `User.capillas` (ManyToMany). 
+- **Un Solo Rector:** Por regla de negocio, una capilla solo puede tener **un Rector activo** al mismo tiempo. Esta validación se realiza a nivel de Backend (`UserCreateUpdateSerializer`).
+- **Feligreses sin Sede:** Un usuario con rol `FELIGRES` **no puede estar asignado a una capilla o centro**. Su arreglo de capillas siempre debe ir vacío `[]`.
+- **Visibilidad Horizontal (Backend y Frontend):**
+  - Los usuarios NO deben verse a sí mismos en la tabla de listado de usuarios.
+  - El Superadmin y el Administrador pueden ver a todos los usuarios.
+  - Los Párrocos y Rectores solo pueden ver usuarios y capillas que pertenezcan a su jurisdicción (filtrado mediante query `User.capillas.all()`).
+  - Los `FELIGRESES` están ocultos de la tabla de listado de usuarios a menos que el usuario sea Superadmin o Administrador (excluidos con `qs.exclude(groups__name='FELIGRES')`).
+- **Restricción de UI:** A los Sacerdotes se les oculta por completo la pestaña de "Usuarios" en el Sidebar.
