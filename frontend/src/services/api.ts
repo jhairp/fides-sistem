@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getToken } from '../utils/auth';
 import type {
   Persona,
   Capilla,
@@ -8,14 +9,11 @@ import type {
   PartidaBautismo,
   PartidaMatrimonio,
   NotaMarginal,
-  AuthUser,
-  AuthResponse,
-  LoginCredentials,
   Rol,
-  Permiso
+  Permiso,
 } from '../domain/types';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -24,9 +22,11 @@ export const apiClient = axios.create({
   },
 });
 
+// Attach JWT token to every request if present
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   if (token) {
+    config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -38,6 +38,7 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.warn('Aviso: Sesión no autorizada o expirada (401). Redirigiendo al login...');
       localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       localStorage.removeItem('user');
       window.dispatchEvent(new Event('auth-unauthorized'));
     }
@@ -45,10 +46,32 @@ apiClient.interceptors.response.use(
   }
 );
 
+// Alias api to apiClient
+export const api = apiClient;
+
+// ---------- Parroquias ----------
+export const fetchParroquias = () => apiClient.get('/sacramentos/parroquias/');
+export const createParroquia = (data: any) => apiClient.post('/sacramentos/parroquias/', data);
+export const updateParroquia = (id: string, data: any) =>
+  apiClient.patch(`/sacramentos/parroquias/${id}/`, data);
+export const fetchCapillasByParroquia = (parroquiaId: string) =>
+  apiClient.get(`/sacramentos/capillas/?parroquia_id=${parroquiaId}`);
+
+// ---------- Capillas ----------
+export const createCapilla = (data: any) => apiClient.post('/sacramentos/capillas/', data);
+export const updateCapilla = (id: string, data: any) =>
+  apiClient.patch(`/sacramentos/capillas/${id}/`, data);
+export const fetchCapilla = (id: string) => apiClient.get(`/sacramentos/capillas/${id}/`);
+export const fetchCapillas = () => apiClient.get('/sacramentos/capillas/');
+
 export const apiService = {
   // Auth
   login: async (username: string, password: string) => {
     const res = await apiClient.post('/auth/token/', { username, password });
+    return res.data;
+  },
+  getCurrentUser: async () => {
+    const res = await apiClient.get('/auth/users/me/');
     return res.data;
   },
 
@@ -134,10 +157,6 @@ export const apiService = {
     const res = await apiClient.post(`/auth/users/${id}/toggle_active/`);
     return res.data;
   },
-  getCurrentUser: async () => {
-    const res = await apiClient.get('/auth/users/me/');
-    return res.data;
-  },
   changePassword: async (current_password: string, new_password: string) => {
     const res = await apiClient.post('/auth/users/change_password/', { current_password, new_password });
     return res.data;
@@ -177,3 +196,5 @@ export const apiService = {
     return res.data;
   },
 };
+
+export default apiClient;

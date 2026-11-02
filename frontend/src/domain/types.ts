@@ -16,20 +16,23 @@ export interface Persona {
 export interface Capilla {
   id: string;
   nombre: string;
+  parroquia?: string;
+  parroquia_nombre?: string;
   telefono?: string;
-  es_sede_principal: boolean;
-  ciudad: string;
-  municipio: string;
+  es_sede_principal?: boolean;
+  ciudad?: string;
+  municipio?: string;
   direccion?: string;
   coordenadas_gps?: string;
-  capacidad_personas: number;
+  coordenadas?: string;
+  capacidad_personas?: number;
   estado: string;
 }
 
 export interface Parroquia {
   id: string;
   nombre: string;
-  diocesis: string;
+  diocesis?: string;
   telefono?: string;
   direccion?: string;
   estado: string;
@@ -111,7 +114,9 @@ export interface AuthUser {
   email: string;
   is_staff?: boolean;
   is_superuser?: boolean;
-  capillas?: {id: string, nombre: string}[];
+  capillas?: { id: string; nombre: string }[];
+  capilla_asignada?: string;
+  capilla_nombre?: string;
   role?: string;
   foto_url?: string;
   persona?: {
@@ -131,6 +136,7 @@ export interface UserAccount {
   username: string;
   email: string;
   role: string;
+  capillas?: { id: string; nombre: string }[];
   capilla_asignada?: string;
   capilla_nombre?: string;
   foto_url?: string;
