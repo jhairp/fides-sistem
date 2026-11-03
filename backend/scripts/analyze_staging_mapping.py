@@ -7,7 +7,7 @@ def connect():
     return psycopg2.connect(
         dbname=os.getenv("POSTGRES_DB", "fidessystem_db"),
         user=os.getenv("POSTGRES_USER", "postgres"),
-        password=os.getenv("POSTGRES_PASSWORD", "JHAIR12345"),
+        password=os.getenv("POSTGRES_PASSWORD", os.getenv("DB_PASSWORD", "postgres")),
         host=os.getenv("POSTGRES_HOST", "localhost"),
         port=os.getenv("POSTGRES_PORT", "5432"),
     )

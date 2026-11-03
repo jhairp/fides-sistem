@@ -16,6 +16,7 @@ backend/staticfiles/
 celerybeat-schedule*
 .env
 .env.*
+!.env.example
 *.env
 
 # Node / React
