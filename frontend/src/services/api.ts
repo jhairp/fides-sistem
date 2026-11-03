@@ -12,6 +12,7 @@ import type {
   Rol,
   Permiso,
   SacramentoSearchResult,
+  PaginatedResponse,
 } from '../domain/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
@@ -66,7 +67,9 @@ export const fetchCapillas = () => apiClient.get('/sacramentos/capillas/');
 
 // ---------- Búsqueda de Sacramentos ----------
 export const fetchBusquedaSacramentos = (params?: Record<string, any>) =>
-  apiClient.get('/sacramentos/busqueda-sacramentos/', { params: { ...params, all: 'true' } });
+  apiClient.get('/sacramentos/busqueda-sacramentos/', { params });
+export const fetchDetalleSacramento = (id: string) =>
+  apiClient.get(`/sacramentos/busqueda-sacramentos/${id}/`);
 
 
 export const apiService = {
@@ -201,10 +204,25 @@ export const apiService = {
     return res.data;
   },
 
-  // Búsqueda de Sacramentos
-  buscarSacramentos: async (params?: Record<string, any>): Promise<SacramentoSearchResult[]> => {
-    const res = await apiClient.get('/sacramentos/busqueda-sacramentos/', { params: { ...params, all: 'true' } });
-    return res.data.results || res.data;
+  // Búsqueda de Sacramentos Eficiente y Paginada
+  buscarSacramentos: async (params?: Record<string, any>): Promise<PaginatedResponse<SacramentoSearchResult>> => {
+    const res = await apiClient.get('/sacramentos/busqueda-sacramentos/', { params });
+    if (Array.isArray(res.data)) {
+      return {
+        count: res.data.length,
+        total_pages: 1,
+        current_page: 1,
+        page_size: res.data.length,
+        next: null,
+        previous: null,
+        results: res.data,
+      };
+    }
+    return res.data;
+  },
+  getDetalleSacramento: async (id: string): Promise<SacramentoSearchResult> => {
+    const res = await apiClient.get(`/sacramentos/busqueda-sacramentos/${id}/`);
+    return res.data;
   },
 };
 

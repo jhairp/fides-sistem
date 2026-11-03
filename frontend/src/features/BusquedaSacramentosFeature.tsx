@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BookOpenCheck,
   Eye,
@@ -12,6 +12,9 @@ import {
   ShieldCheck,
   X,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import type { SacramentoSearchResult, Capilla } from '../domain/types';
 import { apiService } from '../services/api';
@@ -27,16 +30,41 @@ export const BusquedaSacramentosFeature: React.FC = () => {
   const [capillas, setCapillas] = useState<Capilla[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   // Filters state
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterTipo, setFilterTipo] = useState('');
   const [filterCapilla, setFilterCapilla] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
 
-  // Selected item for modal
+  // Selected item for modal & loading detail
   const [selectedSacramento, setSelectedSacramento] = useState<SacramentoSearchResult | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   const { isVisible, alertType, alertMessage } = useActionAlert();
+
+  // Debounce search input (350ms)
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1); // Reset to page 1 on new search
+    }, 350);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchTerm]);
 
   const fetchCapillas = async () => {
     try {
@@ -47,19 +75,28 @@ export const BusquedaSacramentosFeature: React.FC = () => {
     }
   };
 
-  const fetchSacramentos = async () => {
+  const fetchSacramentos = async (page = 1) => {
     setLoading(true);
     try {
-      const params: Record<string, any> = {};
+      const params: Record<string, any> = {
+        page,
+        page_size: 50,
+      };
+      if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
       if (filterTipo) params.tipo_sacramento = filterTipo;
       if (filterCapilla) params.capilla_id = filterCapilla;
       if (filterEstado) params.estado = filterEstado;
 
-      const data = await apiService.buscarSacramentos(params);
-      setSacramentos(Array.isArray(data) ? data : []);
+      const res = await apiService.buscarSacramentos(params);
+      setSacramentos(res.results || []);
+      setTotalCount(res.count || 0);
+      setTotalPages(res.total_pages || 1);
+      setCurrentPage(res.current_page || 1);
     } catch (err) {
       console.error('Error al buscar sacramentos:', err);
       setSacramentos([]);
+      setTotalCount(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -70,32 +107,30 @@ export const BusquedaSacramentosFeature: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchSacramentos();
+    setCurrentPage(1);
   }, [filterTipo, filterCapilla, filterEstado]);
 
-  // Client-side text search (matches names, CI, celebrant, without duplicating dropdowns)
-  const filteredSacramentos = sacramentos.filter((s) => {
-    if (!searchTerm.trim()) return true;
-    const term = searchTerm.toLowerCase();
+  useEffect(() => {
+    fetchSacramentos(currentPage);
+  }, [currentPage, debouncedSearch, filterTipo, filterCapilla, filterEstado]);
 
-    const matchesTitular = s.titular_principal.toLowerCase().includes(term);
-    const matchesSecundario = (s.titular_secundario || '').toLowerCase().includes(term);
-    const matchesCI = (s.titular_ci || '').toLowerCase().includes(term);
-    const matchesCelebrante = (s.sacerdote_nombre || '').toLowerCase().includes(term);
-    const matchesLibro = (s.numero_libro || '').toLowerCase().includes(term);
-    const matchesFolio = (s.numero_folio || '').toLowerCase().includes(term);
-    const matchesPartida = (s.numero_partida || '').toLowerCase().includes(term);
-
-    return (
-      matchesTitular ||
-      matchesSecundario ||
-      matchesCI ||
-      matchesCelebrante ||
-      matchesLibro ||
-      matchesFolio ||
-      matchesPartida
-    );
-  });
+  const handleOpenDetail = async (item: SacramentoSearchResult) => {
+    setSelectedSacramento(item);
+    // If details are already present, don't re-fetch
+    if (item.detalles_adicionales && Object.keys(item.detalles_adicionales).length > 0) {
+      return;
+    }
+    // Fetch full canonical detail on-demand
+    setLoadingDetail(true);
+    try {
+      const fullDetail = await apiService.getDetalleSacramento(item.id);
+      setSelectedSacramento(fullDetail);
+    } catch (err) {
+      console.error('Error al obtener detalle del sacramento:', err);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
 
   const getSacramentoBadge = (tipo: string) => {
     switch (tipo) {
@@ -221,7 +256,7 @@ export const BusquedaSacramentosFeature: React.FC = () => {
       render: (s) => (
         <div className="flex items-center justify-center">
           <button
-            onClick={() => setSelectedSacramento(s)}
+            onClick={() => handleOpenDetail(s)}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-600 hover:text-white text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase transition-all shadow-sm cursor-pointer border border-blue-200 dark:border-slate-700"
             title="Ver Detalle Completo de la Partida"
           >
@@ -241,7 +276,7 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
       <FeatureHeader
         title="BÚSQUEDA GENERAL DE SACRAMENTOS"
-        description="Localización de partidas sacramentales en los libros físicos (libro, folio y número de asiento) y fecha de celebración."
+        description="Localización indexada de partidas sacramentales en los libros físicos (libro, folio y número de asiento) y fecha de celebración."
         icon={BookOpenCheck}
       />
 
@@ -284,16 +319,48 @@ export const BusquedaSacramentosFeature: React.FC = () => {
         ]}
       />
 
-      {/* Tabla Estandarizada con Conteo */}
-      <FeatureTable<SacramentoSearchResult>
-        title="Partidas Sacramentales Encontradas"
-        columns={columns}
-        data={filteredSacramentos}
-        loading={loading}
-        emptyMessage="No se encontraron registros de sacramentos con los criterios de búsqueda aplicados."
-      />
+      {/* Tabla Estandarizada con Conteo y Paginación Servidor */}
+      <div className="space-y-3">
+        <FeatureTable<SacramentoSearchResult>
+          title={`Partidas Sacramentales (${totalCount.toLocaleString()} Registros Canónicos)`}
+          columns={columns}
+          data={sacramentos}
+          loading={loading}
+          emptyMessage="No se encontraron registros de sacramentos con los criterios de búsqueda aplicados."
+        />
 
-      {/* Modal de Detalle Completo de la Partida Canónica */}
+        {/* Controles de Paginación Optimizados */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+              MOSTRANDO PÁGINA <span className="font-bold text-blue-600 dark:text-blue-400">{currentPage}</span> DE{' '}
+              <span className="font-bold text-slate-900 dark:text-slate-100">{totalPages}</span> ({totalCount.toLocaleString()} REGISTROS)
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                disabled={currentPage <= 1 || loading}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white disabled:opacity-40 disabled:hover:bg-slate-100 dark:disabled:hover:bg-slate-800 disabled:hover:text-inherit text-slate-700 dark:text-slate-300 text-xs font-bold uppercase transition-all cursor-pointer disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>ANTERIOR</span>
+              </button>
+
+              <button
+                disabled={currentPage >= totalPages || loading}
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white disabled:opacity-40 disabled:hover:bg-slate-100 dark:disabled:hover:bg-slate-800 disabled:hover:text-inherit text-slate-700 dark:text-slate-300 text-xs font-bold uppercase transition-all cursor-pointer disabled:cursor-not-allowed"
+              >
+                <span>SIGUIENTE</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Modal de Detalle Completo de la Partida Canónica (Carga bajo demanda) */}
       {selectedSacramento && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
@@ -367,10 +434,18 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
               {/* Sección 2: Personas Involucradas */}
               <div className="space-y-3">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <User className="w-4 h-4 text-slate-500" />
-                  PERSONA(S) Y PARTÍCIPES DEL SACRAMENTO
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-slate-500" />
+                    PERSONA(S) Y PARTÍCIPES DEL SACRAMENTO
+                  </p>
+                  {loadingDetail && (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-blue-600 font-semibold uppercase animate-pulse">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      CARGANDO DETALLES HISTÓRICOS...
+                    </span>
+                  )}
+                </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
                   <div>
