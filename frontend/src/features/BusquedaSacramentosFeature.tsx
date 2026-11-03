@@ -16,6 +16,8 @@ import {
   ChevronRight,
   Loader2,
   Search,
+  Hash,
+  Bookmark,
 } from 'lucide-react';
 import type { SacramentoSearchResult } from '../domain/types';
 import { apiService } from '../services/api';
@@ -34,13 +36,21 @@ export const BusquedaSacramentosFeature: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Specific Filters state
+  // 1. Buscador exclusivo por nombre
   const [searchNombre, setSearchNombre] = useState('');
   const [debouncedNombre, setDebouncedNombre] = useState('');
 
-  const [searchUbicacion, setSearchUbicacion] = useState('');
-  const [debouncedUbicacion, setDebouncedUbicacion] = useState('');
+  // 2. Filtro de ubicación física separado en 3 secciones
+  const [filterLibro, setFilterLibro] = useState('');
+  const [debouncedLibro, setDebouncedLibro] = useState('');
 
+  const [filterFolio, setFilterFolio] = useState('');
+  const [debouncedFolio, setDebouncedFolio] = useState('');
+
+  const [filterPartida, setFilterPartida] = useState('');
+  const [debouncedPartida, setDebouncedPartida] = useState('');
+
+  // 3. Otros filtros (Tipo y Rango de Fechas)
   const [filterTipo, setFilterTipo] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
@@ -51,7 +61,18 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
   const { isVisible, alertType, alertMessage } = useActionAlert();
 
-  // Debounce search inputs (350ms)
+  // Helper canónico para formatear fechas a DD-MM-AAAA
+  const formatDateDMY = (dateStr?: string | null): string => {
+    if (!dateStr) return 'NO ESPECIFICADA';
+    const parts = dateStr.trim().split('-');
+    if (parts.length === 3) {
+      const [y, m, d] = parts;
+      return `${d.padStart(2, '0')}-${m.padStart(2, '0')}-${y}`;
+    }
+    return dateStr;
+  };
+
+  // Debounce para inputs de texto (350ms)
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (searchTimeoutRef.current) {
@@ -59,7 +80,9 @@ export const BusquedaSacramentosFeature: React.FC = () => {
     }
     searchTimeoutRef.current = setTimeout(() => {
       setDebouncedNombre(searchNombre);
-      setDebouncedUbicacion(searchUbicacion);
+      setDebouncedLibro(filterLibro);
+      setDebouncedFolio(filterFolio);
+      setDebouncedPartida(filterPartida);
       setCurrentPage(1);
     }, 350);
 
@@ -68,7 +91,7 @@ export const BusquedaSacramentosFeature: React.FC = () => {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchNombre, searchUbicacion]);
+  }, [searchNombre, filterLibro, filterFolio, filterPartida]);
 
   const fetchSacramentos = async (page = 1) => {
     setLoading(true);
@@ -78,7 +101,9 @@ export const BusquedaSacramentosFeature: React.FC = () => {
         page_size: 50,
       };
       if (debouncedNombre.trim()) params.nombre = debouncedNombre.trim();
-      if (debouncedUbicacion.trim()) params.ubicacion = debouncedUbicacion.trim();
+      if (debouncedLibro.trim()) params.libro = debouncedLibro.trim();
+      if (debouncedFolio.trim()) params.folio = debouncedFolio.trim();
+      if (debouncedPartida.trim()) params.partida = debouncedPartida.trim();
       if (filterTipo) params.tipo_sacramento = filterTipo;
       if (fechaInicio) params.fecha_desde = fechaInicio;
       if (fechaFin) params.fecha_hasta = fechaFin;
@@ -104,13 +129,26 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
   useEffect(() => {
     fetchSacramentos(currentPage);
-  }, [currentPage, debouncedNombre, debouncedUbicacion, filterTipo, fechaInicio, fechaFin]);
+  }, [
+    currentPage,
+    debouncedNombre,
+    debouncedLibro,
+    debouncedFolio,
+    debouncedPartida,
+    filterTipo,
+    fechaInicio,
+    fechaFin,
+  ]);
 
   const handleClearFilters = () => {
     setSearchNombre('');
     setDebouncedNombre('');
-    setSearchUbicacion('');
-    setDebouncedUbicacion('');
+    setFilterLibro('');
+    setDebouncedLibro('');
+    setFilterFolio('');
+    setDebouncedFolio('');
+    setFilterPartida('');
+    setDebouncedPartida('');
     setFilterTipo('');
     setFechaInicio('');
     setFechaFin('');
@@ -220,9 +258,9 @@ export const BusquedaSacramentosFeature: React.FC = () => {
     {
       header: 'Fecha Celebración',
       render: (s) => (
-        <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200 font-mono">
           <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-          <span>{s.fecha_sacramento || 'NO ESPECIFICADA'}</span>
+          <span>{formatDateDMY(s.fecha_sacramento)}</span>
         </span>
       ),
     },
@@ -260,40 +298,28 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
       <FeatureHeader
         title="BÚSQUEDA GENERAL DE SACRAMENTOS"
-        description="Búsqueda por nombre de feligrés, ubicación física (libro, folio, partida) y rango de fechas canónicas."
+        description="Búsqueda por nombre de feligrés, ubicación canónica en 3 secciones (libro, folio, partida) y rango de fechas."
         icon={BookOpenCheck}
       />
 
-      {/* Panel de Filtros Específicos Reorganizado */}
+      {/* Panel de Filtros Reorganizado y Desacoplado */}
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm space-y-3">
-        {/* Fila 1: Buscador por Nombre + Buscador por Ubicación + Tipo Sacramento */}
+        {/* Fila 1: Buscador exclusivo por Nombre + Selector de Sacramento */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-          {/* Buscador exclusivo por Nombre */}
-          <div className="relative md:col-span-5">
+          {/* 1. Buscador exclusivo por Nombre */}
+          <div className="relative md:col-span-8">
             <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
             <input
               type="text"
               value={searchNombre}
               onChange={(e) => setSearchNombre(e.target.value.toUpperCase())}
-              placeholder="BUSCAR SOLO POR NOMBRE O APELLIDO..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-          </div>
-
-          {/* Buscador exclusivo por Ubicación (Libro / Folio / Partida) */}
-          <div className="relative md:col-span-4">
-            <BookOpen className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              value={searchUbicacion}
-              onChange={(e) => setSearchUbicacion(e.target.value.toUpperCase())}
-              placeholder="BUSCAR POR UBICACIÓN (LIBRO, FOLIO O PARTIDA)..."
+              placeholder="BUSCAR SOLO POR NOMBRE O APELLIDO DEL FELIGRÉS..."
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           {/* Selector de Tipo de Sacramento */}
-          <div className="relative md:col-span-3">
+          <div className="relative md:col-span-4">
             <select
               value={filterTipo}
               onChange={(e) => setFilterTipo(e.target.value)}
@@ -308,7 +334,53 @@ export const BusquedaSacramentosFeature: React.FC = () => {
           </div>
         </div>
 
-        {/* Fila 2: Filtro por Rango de Fechas (Fecha Inicio y Fecha Fin) + Botón Limpiar */}
+        {/* Fila 2: Buscador por Ubicación en 3 Secciones (Libro, Folio, Partida) */}
+        <div>
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+            UBICACIÓN FÍSICA EN LIBROS (3 SECCIONES):
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Sección 1: Número de Libro */}
+            <div className="relative">
+              <Bookmark className="w-4 h-4 absolute left-3.5 top-3 text-blue-600/70" />
+              <input
+                type="text"
+                value={filterLibro}
+                onChange={(e) => setFilterLibro(e.target.value.toUpperCase())}
+                placeholder="N° DE LIBRO (EJ. 49)"
+                className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+
+            {/* Sección 2: Número de Folio / Página */}
+            <div className="relative">
+              <FileText className="w-4 h-4 absolute left-3.5 top-3 text-amber-600/70" />
+              <input
+                type="text"
+                value={filterFolio}
+                onChange={(e) => setFilterFolio(e.target.value.toUpperCase())}
+                placeholder="N° FOLIO / PÁGINA (EJ. 118)"
+                className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+
+            {/* Sección 3: Número de Partida / Asiento */}
+            <div className="relative">
+              <Hash className="w-4 h-4 absolute left-3.5 top-3 text-emerald-600/70" />
+              <input
+                type="text"
+                value={filterPartida}
+                onChange={(e) => setFilterPartida(e.target.value.toUpperCase())}
+                placeholder="N° DE PARTIDA (EJ. 349)"
+                className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Fila 3: Rango de Fechas (Fecha Inicio y Fecha Fin) + Botón Limpiar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1.5">
@@ -340,7 +412,13 @@ export const BusquedaSacramentosFeature: React.FC = () => {
           </div>
 
           {/* Botón para Limpiar todos los Filtros */}
-          {(searchNombre || searchUbicacion || filterTipo || fechaInicio || fechaFin) && (
+          {(searchNombre ||
+            filterLibro ||
+            filterFolio ||
+            filterPartida ||
+            filterTipo ||
+            fechaInicio ||
+            fechaFin) && (
             <button
               type="button"
               onClick={handleClearFilters}
@@ -459,9 +537,9 @@ export const BusquedaSacramentosFeature: React.FC = () => {
                     <MapPin className="w-3.5 h-3.5 text-blue-600" />
                     <span>SEDE / CAPILLA: {selectedSacramento.capilla_nombre}</span>
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5 font-mono">
                     <Calendar className="w-3.5 h-3.5 text-blue-600" />
-                    <span>FECHA: {selectedSacramento.fecha_sacramento}</span>
+                    <span>FECHA: {formatDateDMY(selectedSacramento.fecha_sacramento)}</span>
                   </span>
                 </div>
               </div>
@@ -596,7 +674,7 @@ export const BusquedaSacramentosFeature: React.FC = () => {
                               OFICIALÍA: {selectedSacramento.detalles_adicionales.reg_civil_oficialia} · LIBRO:{' '}
                               {selectedSacramento.detalles_adicionales.reg_civil_libro} · PARTIDA:{' '}
                               {selectedSacramento.detalles_adicionales.reg_civil_partida} · FECHA:{' '}
-                              {selectedSacramento.detalles_adicionales.reg_civil_fecha || '—'}
+                              {formatDateDMY(selectedSacramento.detalles_adicionales.reg_civil_fecha)}
                             </p>
                           </div>
                         )}
