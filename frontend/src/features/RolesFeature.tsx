@@ -5,6 +5,7 @@ import type { Rol, Permiso } from '../domain/types';
 import { EditButton } from '../components/common/TableButtons';
 import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 import ActionOverlay from '../components/common/ActionOverlay';
+import TopAlert from '../components/common/TopAlert';
 import { useActionAlert } from '../hooks/useActionAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
 import { FeatureTable, type TableColumn } from '../components/common/FeatureTable';
@@ -137,7 +138,8 @@ export const RolesFeature: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <ActionOverlay isVisible={isVisible} type={alertType} message={alertMessage} />
+      <ActionOverlay isVisible={isVisible} type={alertType} />
+      <TopAlert show={isVisible} type={alertType} message={alertMessage} />
       
       <FeatureHeader
         title="Gestión de Roles y Permisos"
@@ -238,7 +240,7 @@ export const RolesFeature: React.FC = () => {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(groupedPermisos).map(([groupName, perms]) => (
+                    {Object.entries(groupedPermisos).map(([groupName, perms]: [string, Permiso[]]) => (
                       <div key={groupName} className="border border-slate-100 dark:border-slate-800 rounded-lg p-3 bg-slate-50/50 dark:bg-slate-900/50">
                         <p className="text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-2 border-b border-slate-200 dark:border-slate-800 pb-1 capitalize">
                           {groupName}
