@@ -31,44 +31,114 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const currentPath = location.pathname.substring(1) || 'dashboard';
+  
+  const isSecretario = user?.role === 'SECRETARIO';
+  const defaultTab = isSecretario ? 'busqueda-sacramentos' : 'dashboard';
+  const currentPath = location.pathname.substring(1) || defaultTab;
 
   const menuSections = [
     {
       label: 'SACRAMENTOS',
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['*'] },
-        { id: 'busqueda', label: 'Búsqueda Personas', icon: Search, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
-        { id: 'busqueda-sacramentos', label: 'Búsqueda Sacramentos', icon: BookOpenCheck, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
-        { id: 'bautismos', label: 'Bautismos', icon: BookOpen, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
-        { id: 'matrimonios', label: 'Matrimonios', icon: Heart, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
-        { id: 'notas', label: 'Notas Marginales', icon: FileText, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        {
+          id: 'dashboard',
+          label: 'Dashboard',
+          icon: LayoutDashboard,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'FELIGRES'],
+        },
+        {
+          id: 'busqueda',
+          label: 'Búsqueda Personas',
+          icon: Search,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
+        {
+          id: 'busqueda-sacramentos',
+          label: 'Búsqueda Sacramentos',
+          icon: BookOpenCheck,
+          roles: ['SECRETARIO', 'SUPERADMIN'],
+        },
+        {
+          id: 'bautismos',
+          label: 'Bautismos',
+          icon: BookOpen,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
+        {
+          id: 'matrimonios',
+          label: 'Matrimonios',
+          icon: Heart,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
+        {
+          id: 'notas',
+          label: 'Notas Marginales',
+          icon: FileText,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
       ],
     },
     {
       label: 'HERRAMIENTAS',
       items: [
-        { id: 'ocr', label: 'OCR (IA)', icon: ScanLine, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
-        { id: 'capillas', label: 'Capillas', icon: Building2, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
-        { id: 'eventos', label: 'Eventos y Misas', icon: Calendar, roles: ['*'] },
-        { id: 'comprobantes', label: 'Certificados QR', icon: QrCode, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        {
+          id: 'ocr',
+          label: 'OCR (IA)',
+          icon: ScanLine,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
+        {
+          id: 'capillas',
+          label: 'Capillas',
+          icon: Building2,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
+        {
+          id: 'eventos',
+          label: 'Eventos y Misas',
+          icon: Calendar,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'FELIGRES'],
+        },
+        {
+          id: 'comprobantes',
+          label: 'Certificados QR',
+          icon: QrCode,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE'],
+        },
       ],
     },
     {
       label: 'ADMINISTRACIÓN',
       items: [
-        { id: 'usuarios', label: 'Usuarios', icon: Users, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR'] },
-        { id: 'roles', label: 'Roles y Permisos', icon: ShieldCheck, roles: ['SUPERADMIN'] },
-        { id: 'auditoria', label: 'Auditoría', icon: ClipboardList, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
+        {
+          id: 'usuarios',
+          label: 'Usuarios',
+          icon: Users,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR'],
+        },
+        {
+          id: 'roles',
+          label: 'Roles y Permisos',
+          icon: ShieldCheck,
+          roles: ['SUPERADMIN'],
+        },
+        {
+          id: 'auditoria',
+          label: 'Auditoría',
+          icon: ClipboardList,
+          roles: ['SUPERADMIN', 'ADMINISTRADOR'],
+        },
       ],
     },
   ];
 
   const role = user?.role || 'FELIGRES';
-  const filteredSections = menuSections.map(section => ({
-    ...section,
-    items: section.items.filter(item => item.roles.includes('*') || item.roles.includes(role))
-  })).filter(section => section.items.length > 0);
+  const filteredSections = menuSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => item.roles.includes(role)),
+    }))
+    .filter((section) => section.items.length > 0);
 
   const handleSelectTab = (tab: string) => {
     navigate(`/${tab}`);
