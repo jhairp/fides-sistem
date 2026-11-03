@@ -200,51 +200,46 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 qs = qs.filter(q_juris).distinct()
 
-        # Filtros de búsqueda inteligente y rápida
-        search = self.request.query_params.get('search', '').strip()
-        if search:
-            if search.isdigit():
-                qs = qs.filter(
-                    Q(numero_folio=search) |
-                    Q(numero_partida=search) |
-                    Q(libro__numero_libro=search) |
-                    Q(bautismo__bautizado__ci__icontains=search) |
-                    Q(matrimonio__novio__ci__icontains=search) |
-                    Q(matrimonio__novia__ci__icontains=search)
+        # 1. Filtro exclusivo por NOMBRE de la persona (bautizado, novio, novia)
+        nombre = self.request.query_params.get('nombre', '').strip() or self.request.query_params.get('search', '').strip()
+        if nombre:
+            terms = nombre.split()
+            q_nom = Q()
+            for term in terms:
+                q_term = (
+                    Q(bautismo__bautizado__nombres__icontains=term) |
+                    Q(bautismo__bautizado__apellido_paterno__icontains=term) |
+                    Q(bautismo__bautizado__apellido_materno__icontains=term) |
+                    Q(matrimonio__novio__nombres__icontains=term) |
+                    Q(matrimonio__novio__apellido_paterno__icontains=term) |
+                    Q(matrimonio__novio__apellido_materno__icontains=term) |
+                    Q(matrimonio__novia__nombres__icontains=term) |
+                    Q(matrimonio__novia__apellido_paterno__icontains=term) |
+                    Q(matrimonio__novia__apellido_materno__icontains=term)
                 )
-            else:
-                terms = search.split()
-                q_obj = Q()
-                for term in terms:
-                    q_term = (
-                        Q(bautismo__bautizado__nombres__icontains=term) |
-                        Q(bautismo__bautizado__apellido_paterno__icontains=term) |
-                        Q(bautismo__bautizado__apellido_materno__icontains=term) |
-                        Q(bautismo__bautizado__ci__icontains=term) |
-                        Q(matrimonio__novio__nombres__icontains=term) |
-                        Q(matrimonio__novio__apellido_paterno__icontains=term) |
-                        Q(matrimonio__novio__apellido_materno__icontains=term) |
-                        Q(matrimonio__novia__nombres__icontains=term) |
-                        Q(matrimonio__novia__apellido_paterno__icontains=term) |
-                        Q(matrimonio__novia__apellido_materno__icontains=term) |
-                        Q(sacerdote_celebrante__nombres__icontains=term) |
-                        Q(sacerdote_celebrante__apellido_paterno__icontains=term)
-                    )
-                    q_obj &= q_term
-                qs = qs.filter(q_obj).distinct()
+                q_nom &= q_term
+            qs = qs.filter(q_nom).distinct()
 
+        # 2. Buscador por UBICACIÓN física en libros (Libro, Folio/Página, Partida)
+        ubicacion = self.request.query_params.get('ubicacion', '').strip()
+        if ubicacion:
+            terms = ubicacion.split()
+            q_ubi = Q()
+            for term in terms:
+                q_term = (
+                    Q(libro__numero_libro__icontains=term) |
+                    Q(numero_folio__icontains=term) |
+                    Q(numero_partida__icontains=term)
+                )
+                q_ubi &= q_term
+            qs = qs.filter(q_ubi)
+
+        # 3. Filtro por tipo de sacramento
         tipo_sacramento = self.request.query_params.get('tipo_sacramento', '').strip().upper()
         if tipo_sacramento and tipo_sacramento != 'TODOS':
             qs = qs.filter(libro__tipo_sacramento=tipo_sacramento)
 
-        capilla_id = self.request.query_params.get('capilla_id', '').strip()
-        if capilla_id:
-            qs = qs.filter(libro__capilla_id=capilla_id)
-
-        estado = self.request.query_params.get('estado', '').strip().upper()
-        if estado and estado != 'TODOS':
-            qs = qs.filter(estado_partida=estado)
-
+        # 4. Rango de Fechas (Fecha Inicio y Fecha Fin)
         fecha_desde = self.request.query_params.get('fecha_desde', '').strip()
         if fecha_desde:
             qs = qs.filter(fecha_sacramento__gte=fecha_desde)
@@ -252,5 +247,14 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
         fecha_hasta = self.request.query_params.get('fecha_hasta', '').strip()
         if fecha_hasta:
             qs = qs.filter(fecha_sacramento__lte=fecha_hasta)
+
+        # Filtros opcionales adicionales
+        capilla_id = self.request.query_params.get('capilla_id', '').strip()
+        if capilla_id:
+            qs = qs.filter(libro__capilla_id=capilla_id)
+
+        estado = self.request.query_params.get('estado', '').strip().upper()
+        if estado and estado != 'TODOS':
+            qs = qs.filter(estado_partida=estado)
 
         return qs
