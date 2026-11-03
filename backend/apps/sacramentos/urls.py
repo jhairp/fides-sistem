@@ -9,7 +9,8 @@ from .adapters.primary.views import (
     PartidaBautismoViewSet,
     PartidaMatrimonioViewSet,
     NotaMarginalViewSet,
-    AuditoriaPartidaViewSet
+    AuditoriaPartidaViewSet,
+    BusquedaSacramentosViewSet
 )
 
 router = DefaultRouter()
@@ -22,6 +23,7 @@ router.register(r'bautismos', PartidaBautismoViewSet, basename='bautismos')
 router.register(r'matrimonios', PartidaMatrimonioViewSet, basename='matrimonios')
 router.register(r'notas-marginales', NotaMarginalViewSet, basename='notas-marginales')
 router.register(r'auditorias', AuditoriaPartidaViewSet, basename='auditorias')
+router.register(r'busqueda-sacramentos', BusquedaSacramentosViewSet, basename='busqueda-sacramentos')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -6,6 +6,7 @@ import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { DashboardFeature } from './features/DashboardFeature';
 import { BusquedaFeature } from './features/BusquedaFeature';
+import { BusquedaSacramentosFeature } from './features/BusquedaSacramentosFeature';
 import { BautismosFeature } from './features/BautismosFeature';
 import { MatrimoniosFeature } from './features/MatrimoniosFeature';
 import { NotasMarginalesFeature } from './features/NotasMarginalesFeature';
@@ -67,6 +68,7 @@ const MainLayout: React.FC = () => {
             <Route path="/eventos" element={<EventosFeature />} />
             
             <Route path="/busqueda" element={<ProtectedRoute allowedRoles={staffRoles}><BusquedaFeature /></ProtectedRoute>} />
+            <Route path="/busqueda-sacramentos" element={<ProtectedRoute allowedRoles={staffRoles}><BusquedaSacramentosFeature /></ProtectedRoute>} />
             <Route path="/bautismos" element={<ProtectedRoute allowedRoles={staffRoles}><BautismosFeature /></ProtectedRoute>} />
             <Route path="/matrimonios" element={<ProtectedRoute allowedRoles={staffRoles}><MatrimoniosFeature /></ProtectedRoute>} />
             <Route path="/notas" element={<ProtectedRoute allowedRoles={staffRoles}><NotasMarginalesFeature /></ProtectedRoute>} />
@@ -86,16 +88,16 @@ const MainLayout: React.FC = () => {
   );
 };
 
-export function App() {
+export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
           <MainLayout />
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
