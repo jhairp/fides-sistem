@@ -220,7 +220,20 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
                 q_nom &= q_term
             qs = qs.filter(q_nom).distinct()
 
-        # 2. Buscador por UBICACIÓN física en libros (Libro, Folio/Página, Partida)
+        # 2. Buscador por UBICACIÓN física en 3 secciones (Libro, Folio/Página, Partida)
+        libro = self.request.query_params.get('libro', '').strip()
+        if libro:
+            qs = qs.filter(libro__numero_libro__icontains=libro)
+
+        folio = self.request.query_params.get('folio', '').strip()
+        if folio:
+            qs = qs.filter(numero_folio__icontains=folio)
+
+        partida = self.request.query_params.get('partida', '').strip()
+        if partida:
+            qs = qs.filter(numero_partida__icontains=partida)
+
+        # Fallback si se envía campo unificado ubicacion
         ubicacion = self.request.query_params.get('ubicacion', '').strip()
         if ubicacion:
             terms = ubicacion.split()
