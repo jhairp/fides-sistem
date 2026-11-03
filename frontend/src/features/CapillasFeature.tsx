@@ -15,9 +15,11 @@ export const CapillasFeature: React.FC = () => {
   const fetchCapillas = async () => {
     try {
       const data = await apiService.getCapillas();
-      setCapillas(data);
+      // Ensure we always set an array for rendering
+      setCapillas(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
+      setCapillas([]);
     }
   };
 
