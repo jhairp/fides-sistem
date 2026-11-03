@@ -68,29 +68,130 @@ class Command(BaseCommand):
 
         # 3. Crear Usuarios por Rol
         roles_usuarios = [
-            ('SUPERADMIN', 'SuperAdmin', 'suad@gmail.com', 'SUPERADMIN', 'SISTEMA', None),
-            ('ADMINISTRADOR', 'Administrador', 'admin@gmail.com', 'ADMIN', 'GENERAL', None),
-            ('PARROCO', 'Parroco', 'parroco@gmail.com', 'PARROCO', 'TITULAR', capilla_principal),
-            ('RECTOR', 'Rector', 'rector@gmail.com', 'RECTOR', 'CAPILLA', capilla_secundaria),
-            ('SACERDOTE', 'Sacerdote', 'sacerdote@gmail.com', 'PADRE', 'CELEBRANTE', capilla_principal),
-            ('SECRETARIO', 'Secretario', 'secretario@gmail.com', 'SECRETARIO', 'PARROQUIAL', capilla_principal),
-            ('FELIGRES', 'Feligres', 'feligres@gmail.com', 'FELIGRES', 'COMUN', capilla_secundaria)
+            {
+                'rol': 'SUPERADMIN',
+                'username': 'SuperAdmin',
+                'email': 'suad@gmail.com',
+                'password': '12345678',
+                'nombres': 'SUPERADMIN',
+                'apellido_paterno': 'SISTEMA',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1980, 1, 1),
+                'capilla': None,
+            },
+            {
+                'rol': 'ADMINISTRADOR',
+                'username': 'Administrador',
+                'email': 'admin@gmail.com',
+                'password': '12345678',
+                'nombres': 'ADMIN',
+                'apellido_paterno': 'GENERAL',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1982, 3, 10),
+                'capilla': None,
+            },
+            {
+                'rol': 'PARROCO',
+                'username': 'Parroco',
+                'email': 'parroco@gmail.com',
+                'password': '12345678',
+                'nombres': 'PARROCO',
+                'apellido_paterno': 'TITULAR',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1975, 5, 20),
+                'capilla': capilla_principal,
+            },
+            {
+                'rol': 'RECTOR',
+                'username': 'Rector',
+                'email': 'rector@gmail.com',
+                'password': '12345678',
+                'nombres': 'RECTOR',
+                'apellido_paterno': 'CAPILLA',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1978, 8, 12),
+                'capilla': capilla_secundaria,
+            },
+            {
+                'rol': 'SACERDOTE',
+                'username': 'Sacerdote',
+                'email': 'sacerdote@gmail.com',
+                'password': '12345678',
+                'nombres': 'PADRE',
+                'apellido_paterno': 'CELEBRANTE',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1983, 11, 4),
+                'capilla': capilla_principal,
+            },
+            {
+                'rol': 'SECRETARIO',
+                'username': 'Secretario',
+                'email': 'secretario@gmail.com',
+                'password': '12345678',
+                'nombres': 'SECRETARIO',
+                'apellido_paterno': 'PARROQUIAL',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1985, 2, 18),
+                'capilla': capilla_principal,
+            },
+            {
+                'rol': 'SECRETARIO',
+                'username': 'monicabuscador',
+                'email': 'monicabuscador@gmail.com',
+                'password': 'moni12SJ',
+                'nombres': 'MONICA',
+                'apellido_paterno': 'ARCE',
+                'apellido_materno': 'ROJAS',
+                'sexo': 'F',
+                'fecha_nacimiento': date(1992, 6, 25),
+                'capilla': capilla_principal,
+            },
+            {
+                'rol': 'FELIGRES',
+                'username': 'Feligres',
+                'email': 'feligres@gmail.com',
+                'password': '12345678',
+                'nombres': 'FELIGRES',
+                'apellido_paterno': 'COMUN',
+                'apellido_materno': '',
+                'sexo': 'M',
+                'fecha_nacimiento': date(1995, 9, 30),
+                'capilla': capilla_secundaria,
+            },
         ]
 
-        for rol_codigo, username, email, nombre, apellido, capilla in roles_usuarios:
-            # Crear la persona asociada
+        for udata in roles_usuarios:
+            rol_codigo = udata['rol']
+            username = udata['username']
+            email = udata['email']
+            password = udata['password']
+            nombre = udata['nombres']
+            apellido_paterno = udata['apellido_paterno']
+            apellido_materno = udata.get('apellido_materno', '')
+            sexo = udata.get('sexo', 'M')
+            fecha_nac = udata.get('fecha_nacimiento', date(1980, 1, 1))
+            capilla = udata['capilla']
+
+            # Crear o buscar la persona asociada
             persona, _ = PersonaModel.objects.get_or_create(
                 nombres=nombre.upper(),
-                apellido_paterno=apellido.upper(),
+                apellido_paterno=apellido_paterno.upper(),
                 defaults={
+                    'apellido_materno': apellido_materno.upper() if apellido_materno else None,
                     'ci': f'000{username.upper()}',
-                    'fecha_nacimiento': date(1980, 1, 1),
-                    'sexo': 'M',
+                    'fecha_nacimiento': fecha_nac,
+                    'sexo': sexo,
                     'estado_civil': 'SOLTERO'
                 }
             )
 
-            # Crear el usuario
+            # Crear o actualizar el usuario
             user, u_created = User.objects.get_or_create(
                 username=username,
                 defaults={
@@ -101,10 +202,16 @@ class Command(BaseCommand):
                 }
             )
 
+            user.set_password(password)
+            user.email = email
+            user.persona = persona
+            user.is_active = True
+            user.save()
+
             if u_created:
-                user.set_password('12345678')
-                user.save()
                 self.stdout.write(self.style.SUCCESS(f'Usuario {username} creado con rol {rol_codigo}.'))
+            else:
+                self.stdout.write(self.style.NOTICE(f'Usuario {username} actualizado con rol {rol_codigo}.'))
 
             if capilla:
                 user.capillas.add(capilla)
