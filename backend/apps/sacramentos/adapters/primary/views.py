@@ -176,6 +176,8 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
                 'libro__capilla',
                 'sacerdote_celebrante',
                 'bautismo__bautizado',
+                'bautismo__padre',
+                'bautismo__madre',
                 'matrimonio__novio',
                 'matrimonio__novia',
             )
@@ -200,38 +202,123 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 qs = qs.filter(q_juris).distinct()
 
-        # 1. Filtro exclusivo por NOMBRE de la persona (bautizado, novio, novia)
-        nombre = self.request.query_params.get('nombre', '').strip() or self.request.query_params.get('search', '').strip()
-        if nombre:
-            terms = nombre.split()
-            q_nom = Q()
-            for term in terms:
-                q_term = (
-                    Q(bautismo__bautizado__nombres__icontains=term) |
-                    Q(bautismo__bautizado__apellido_paterno__icontains=term) |
-                    Q(bautismo__bautizado__apellido_materno__icontains=term) |
-                    Q(matrimonio__novio__nombres__icontains=term) |
-                    Q(matrimonio__novio__apellido_paterno__icontains=term) |
-                    Q(matrimonio__novio__apellido_materno__icontains=term) |
-                    Q(matrimonio__novia__nombres__icontains=term) |
-                    Q(matrimonio__novia__apellido_paterno__icontains=term) |
-                    Q(matrimonio__novia__apellido_materno__icontains=term)
-                )
-                q_nom &= q_term
-            qs = qs.filter(q_nom).distinct()
+        import re
 
-        # 2. Buscador por UBICACIÓN física en 3 secciones (Libro, Folio/Página, Partida)
+        def _build_word_pattern(word: str) -> str:
+            escaped = re.escape(word)
+            vowel_map = {
+                'a': '[aáàäAÁÀÄ]', 'A': '[aáàäAÁÀÄ]', 'á': '[aáàäAÁÀÄ]', 'Á': '[aáàäAÁÀÄ]',
+                'e': '[eéèëEÉÈË]', 'E': '[eéèëEÉÈË]', 'é': '[eéèëEÉÈË]', 'É': '[eéèëEÉÈË]',
+                'i': '[iíìïIÍÌÏ]', 'I': '[iíìïIÍÌÏ]', 'í': '[iíìïIÍÌÏ]', 'Í': '[iíìïIÍÌÏ]',
+                'o': '[oóòöOÓÒÖ]', 'O': '[oóòöOÓÒÖ]', 'ó': '[oóòöOÓÒÖ]', 'Ó': '[oóòöOÓÒÖ]',
+                'u': '[uúùüUÚÙÜ]', 'U': '[uúùüUÚÙÜ]', 'ú': '[uúùüUÚÙÜ]', 'Ú': '[uúùüUÚÙÜ]',
+            }
+            chars = [vowel_map.get(ch, ch) for ch in escaped]
+            return rf'\y{"".join(chars)}\y'
+
+        def _word_terms_q(field_name: str, text: str) -> Q:
+            words = [w.strip() for w in text.strip().split() if w.strip()]
+            if not words:
+                return Q()
+            q = Q()
+            for w in words:
+                q &= Q(**{f"{field_name}__iregex": _build_word_pattern(w)})
+            return q
+
+        # 1. Filtro dividido por NOMBRES, APELLIDO PATERNO y APELLIDO MATERNO del titular
+        nombres = self.request.query_params.get('nombres', '').strip()
+        apellido_paterno = self.request.query_params.get('apellido_paterno', '').strip()
+        apellido_materno = self.request.query_params.get('apellido_materno', '').strip()
+
+        if nombres or apellido_paterno or apellido_materno:
+            # Para Bautismo (evaluado sobre bautizado)
+            q_baut = Q()
+            if nombres:
+                q_baut &= _word_terms_q('bautismo__bautizado__nombres', nombres)
+            if apellido_paterno:
+                q_baut &= _word_terms_q('bautismo__bautizado__apellido_paterno', apellido_paterno)
+            if apellido_materno:
+                q_baut &= _word_terms_q('bautismo__bautizado__apellido_materno', apellido_materno)
+
+            # Para Matrimonio (evaluado individualmente sobre el novio o sobre la novia)
+            q_novio = Q()
+            if nombres:
+                q_novio &= _word_terms_q('matrimonio__novio__nombres', nombres)
+            if apellido_paterno:
+                q_novio &= _word_terms_q('matrimonio__novio__apellido_paterno', apellido_paterno)
+            if apellido_materno:
+                q_novio &= _word_terms_q('matrimonio__novio__apellido_materno', apellido_materno)
+
+            q_novia = Q()
+            if nombres:
+                q_novia &= _word_terms_q('matrimonio__novia__nombres', nombres)
+            if apellido_paterno:
+                q_novia &= _word_terms_q('matrimonio__novia__apellido_paterno', apellido_paterno)
+            if apellido_materno:
+                q_novia &= _word_terms_q('matrimonio__novia__apellido_materno', apellido_materno)
+
+            qs = qs.filter(q_baut | q_novio | q_novia).distinct()
+        else:
+            # Fallback a búsqueda unificada por nombre si se envía 'nombre' o 'search'
+            nombre = self.request.query_params.get('nombre', '').strip() or self.request.query_params.get('search', '').strip()
+            if nombre:
+                terms = [w.strip() for w in nombre.split() if w.strip()]
+                q_nom = Q()
+                for term in terms:
+                    pattern = _build_word_pattern(term)
+                    q_term = (
+                        Q(bautismo__bautizado__nombres__iregex=pattern) |
+                        Q(bautismo__bautizado__apellido_paterno__iregex=pattern) |
+                        Q(bautismo__bautizado__apellido_materno__iregex=pattern) |
+                        Q(matrimonio__novio__nombres__iregex=pattern) |
+                        Q(matrimonio__novio__apellido_paterno__iregex=pattern) |
+                        Q(matrimonio__novio__apellido_materno__iregex=pattern) |
+                        Q(matrimonio__novia__nombres__iregex=pattern) |
+                        Q(matrimonio__novia__apellido_paterno__iregex=pattern) |
+                        Q(matrimonio__novia__apellido_materno__iregex=pattern)
+                    )
+                    q_nom &= q_term
+                qs = qs.filter(q_nom).distinct()
+
+        # 2. Filtro por PADRES (Bautismos)
+        padre = self.request.query_params.get('padre', '').strip()
+        if padre:
+            words = [w.strip() for w in padre.split() if w.strip()]
+            q_padre = Q()
+            for w in words:
+                pattern = _build_word_pattern(w)
+                q_padre &= (
+                    Q(bautismo__padre__nombres__iregex=pattern) |
+                    Q(bautismo__padre__apellido_paterno__iregex=pattern) |
+                    Q(bautismo__padre__apellido_materno__iregex=pattern)
+                )
+            qs = qs.filter(q_padre).distinct()
+
+        madre = self.request.query_params.get('madre', '').strip()
+        if madre:
+            words = [w.strip() for w in madre.split() if w.strip()]
+            q_madre = Q()
+            for w in words:
+                pattern = _build_word_pattern(w)
+                q_madre &= (
+                    Q(bautismo__madre__nombres__iregex=pattern) |
+                    Q(bautismo__madre__apellido_paterno__iregex=pattern) |
+                    Q(bautismo__madre__apellido_materno__iregex=pattern)
+                )
+            qs = qs.filter(q_madre).distinct()
+
+        # 3. Buscador por UBICACIÓN física exacta en 3 secciones (Libro, Folio/Página, Partida)
         libro = self.request.query_params.get('libro', '').strip()
         if libro:
-            qs = qs.filter(libro__numero_libro__icontains=libro)
+            qs = qs.filter(libro__numero_libro__iexact=libro)
 
         folio = self.request.query_params.get('folio', '').strip()
         if folio:
-            qs = qs.filter(numero_folio__icontains=folio)
+            qs = qs.filter(numero_folio__iexact=folio)
 
         partida = self.request.query_params.get('partida', '').strip()
         if partida:
-            qs = qs.filter(numero_partida__icontains=partida)
+            qs = qs.filter(numero_partida__iexact=partida)
 
         # Fallback si se envía campo unificado ubicacion
         ubicacion = self.request.query_params.get('ubicacion', '').strip()
@@ -240,19 +327,38 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
             q_ubi = Q()
             for term in terms:
                 q_term = (
-                    Q(libro__numero_libro__icontains=term) |
-                    Q(numero_folio__icontains=term) |
-                    Q(numero_partida__icontains=term)
+                    Q(libro__numero_libro__iexact=term) |
+                    Q(numero_folio__iexact=term) |
+                    Q(numero_partida__iexact=term)
                 )
                 q_ubi &= q_term
             qs = qs.filter(q_ubi)
 
-        # 3. Filtro por tipo de sacramento
+        # 4. Filtro por tipo de sacramento
         tipo_sacramento = self.request.query_params.get('tipo_sacramento', '').strip().upper()
         if tipo_sacramento and tipo_sacramento != 'TODOS':
             qs = qs.filter(libro__tipo_sacramento=tipo_sacramento)
 
-        # 4. Rango de Fechas (Fecha Inicio y Fecha Fin)
+        # 5. Rango de Fechas de Nacimiento
+        fecha_nac_desde = self.request.query_params.get('fecha_nac_desde', '').strip()
+        if fecha_nac_desde:
+            q_nac_desde = (
+                Q(bautismo__bautizado__fecha_nacimiento__gte=fecha_nac_desde) |
+                Q(matrimonio__novio__fecha_nacimiento__gte=fecha_nac_desde) |
+                Q(matrimonio__novia__fecha_nacimiento__gte=fecha_nac_desde)
+            )
+            qs = qs.filter(q_nac_desde).distinct()
+
+        fecha_nac_hasta = self.request.query_params.get('fecha_nac_hasta', '').strip()
+        if fecha_nac_hasta:
+            q_nac_hasta = (
+                Q(bautismo__bautizado__fecha_nacimiento__lte=fecha_nac_hasta) |
+                Q(matrimonio__novio__fecha_nacimiento__lte=fecha_nac_hasta) |
+                Q(matrimonio__novia__fecha_nacimiento__lte=fecha_nac_hasta)
+            )
+            qs = qs.filter(q_nac_hasta).distinct()
+
+        # 6. Rango de Fechas de Celebración (Fecha Sacramento)
         fecha_desde = self.request.query_params.get('fecha_desde', '').strip()
         if fecha_desde:
             qs = qs.filter(fecha_sacramento__gte=fecha_desde)
