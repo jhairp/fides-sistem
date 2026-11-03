@@ -15,19 +15,18 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Search,
 } from 'lucide-react';
-import type { SacramentoSearchResult, Capilla } from '../domain/types';
+import type { SacramentoSearchResult } from '../domain/types';
 import { apiService } from '../services/api';
 import { useActionAlert } from '../hooks/useActionAlert';
 import ActionOverlay from '../components/common/ActionOverlay';
 import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
-import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 import { FeatureTable, type TableColumn } from '../components/common/FeatureTable';
 
 export const BusquedaSacramentosFeature: React.FC = () => {
   const [sacramentos, setSacramentos] = useState<SacramentoSearchResult[]>([]);
-  const [capillas, setCapillas] = useState<Capilla[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Pagination state
@@ -35,12 +34,16 @@ export const BusquedaSacramentosFeature: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Filters state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  // Specific Filters state
+  const [searchNombre, setSearchNombre] = useState('');
+  const [debouncedNombre, setDebouncedNombre] = useState('');
+
+  const [searchUbicacion, setSearchUbicacion] = useState('');
+  const [debouncedUbicacion, setDebouncedUbicacion] = useState('');
+
   const [filterTipo, setFilterTipo] = useState('');
-  const [filterCapilla, setFilterCapilla] = useState('');
-  const [filterEstado, setFilterEstado] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
   // Selected item for modal & loading detail
   const [selectedSacramento, setSelectedSacramento] = useState<SacramentoSearchResult | null>(null);
@@ -48,15 +51,16 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
   const { isVisible, alertType, alertMessage } = useActionAlert();
 
-  // Debounce search input (350ms)
+  // Debounce search inputs (350ms)
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
     searchTimeoutRef.current = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-      setCurrentPage(1); // Reset to page 1 on new search
+      setDebouncedNombre(searchNombre);
+      setDebouncedUbicacion(searchUbicacion);
+      setCurrentPage(1);
     }, 350);
 
     return () => {
@@ -64,16 +68,7 @@ export const BusquedaSacramentosFeature: React.FC = () => {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchTerm]);
-
-  const fetchCapillas = async () => {
-    try {
-      const data = await apiService.getCapillas();
-      setCapillas(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Error al cargar capillas:', err);
-    }
-  };
+  }, [searchNombre, searchUbicacion]);
 
   const fetchSacramentos = async (page = 1) => {
     setLoading(true);
@@ -82,10 +77,11 @@ export const BusquedaSacramentosFeature: React.FC = () => {
         page,
         page_size: 50,
       };
-      if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
+      if (debouncedNombre.trim()) params.nombre = debouncedNombre.trim();
+      if (debouncedUbicacion.trim()) params.ubicacion = debouncedUbicacion.trim();
       if (filterTipo) params.tipo_sacramento = filterTipo;
-      if (filterCapilla) params.capilla_id = filterCapilla;
-      if (filterEstado) params.estado = filterEstado;
+      if (fechaInicio) params.fecha_desde = fechaInicio;
+      if (fechaFin) params.fecha_hasta = fechaFin;
 
       const res = await apiService.buscarSacramentos(params);
       setSacramentos(res.results || []);
@@ -103,24 +99,29 @@ export const BusquedaSacramentosFeature: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCapillas();
-  }, []);
-
-  useEffect(() => {
     setCurrentPage(1);
-  }, [filterTipo, filterCapilla, filterEstado]);
+  }, [filterTipo, fechaInicio, fechaFin]);
 
   useEffect(() => {
     fetchSacramentos(currentPage);
-  }, [currentPage, debouncedSearch, filterTipo, filterCapilla, filterEstado]);
+  }, [currentPage, debouncedNombre, debouncedUbicacion, filterTipo, fechaInicio, fechaFin]);
+
+  const handleClearFilters = () => {
+    setSearchNombre('');
+    setDebouncedNombre('');
+    setSearchUbicacion('');
+    setDebouncedUbicacion('');
+    setFilterTipo('');
+    setFechaInicio('');
+    setFechaFin('');
+    setCurrentPage(1);
+  };
 
   const handleOpenDetail = async (item: SacramentoSearchResult) => {
     setSelectedSacramento(item);
-    // If details are already present, don't re-fetch
     if (item.detalles_adicionales && Object.keys(item.detalles_adicionales).length > 0) {
       return;
     }
-    // Fetch full canonical detail on-demand
     setLoadingDetail(true);
     try {
       const fullDetail = await apiService.getDetalleSacramento(item.id);
@@ -234,23 +235,6 @@ export const BusquedaSacramentosFeature: React.FC = () => {
       ),
     },
     {
-      header: 'Estado',
-      className: 'text-center',
-      render: (s) => (
-        <span
-          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-            s.estado_partida === 'ACTIVA'
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-              : s.estado_partida === 'RECTIFICADA'
-              ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-              : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-          }`}
-        >
-          {s.estado_partida}
-        </span>
-      ),
-    },
-    {
       header: 'Acciones',
       className: 'text-center',
       render: (s) => (
@@ -276,48 +260,98 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
       <FeatureHeader
         title="BÚSQUEDA GENERAL DE SACRAMENTOS"
-        description="Localización indexada de partidas sacramentales en los libros físicos (libro, folio y número de asiento) y fecha de celebración."
+        description="Búsqueda por nombre de feligrés, ubicación física (libro, folio, partida) y rango de fechas canónicas."
         icon={BookOpenCheck}
       />
 
-      {/* Buscador y Filtros Avanzados */}
-      <FeatureSearchFilters
-        searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
-        placeholder="BUSCAR POR NOMBRE DE PERSONA, CI, LIBRO, FOLIO O SACERDOTE..."
-        selectFilters={[
-          {
-            value: filterTipo,
-            onChange: setFilterTipo,
-            placeholder: 'TODOS LOS SACRAMENTOS',
-            options: [
-              { label: 'BAUTISMO', value: 'BAUTISMO' },
-              { label: 'MATRIMONIO', value: 'MATRIMONIO' },
-              { label: 'CONFIRMACIÓN', value: 'CONFIRMACION' },
-              { label: 'PRIMERA COMUNIÓN', value: 'COMUNION' },
-            ],
-          },
-          {
-            value: filterCapilla,
-            onChange: setFilterCapilla,
-            placeholder: 'TODAS LAS CAPILLAS / SEDES',
-            options: capillas.map((c) => ({
-              label: c.nombre,
-              value: c.id,
-            })),
-          },
-          {
-            value: filterEstado,
-            onChange: setFilterEstado,
-            placeholder: 'TODOS LOS ESTADOS',
-            options: [
-              { label: 'ACTIVA', value: 'ACTIVA' },
-              { label: 'RECTIFICADA', value: 'RECTIFICADA' },
-              { label: 'ANULADA', value: 'ANULADA' },
-            ],
-          },
-        ]}
-      />
+      {/* Panel de Filtros Específicos Reorganizado */}
+      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm space-y-3">
+        {/* Fila 1: Buscador por Nombre + Buscador por Ubicación + Tipo Sacramento */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+          {/* Buscador exclusivo por Nombre */}
+          <div className="relative md:col-span-5">
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+            <input
+              type="text"
+              value={searchNombre}
+              onChange={(e) => setSearchNombre(e.target.value.toUpperCase())}
+              placeholder="BUSCAR SOLO POR NOMBRE O APELLIDO..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+          </div>
+
+          {/* Buscador exclusivo por Ubicación (Libro / Folio / Partida) */}
+          <div className="relative md:col-span-4">
+            <BookOpen className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+            <input
+              type="text"
+              value={searchUbicacion}
+              onChange={(e) => setSearchUbicacion(e.target.value.toUpperCase())}
+              placeholder="BUSCAR POR UBICACIÓN (LIBRO, FOLIO O PARTIDA)..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+          </div>
+
+          {/* Selector de Tipo de Sacramento */}
+          <div className="relative md:col-span-3">
+            <select
+              value={filterTipo}
+              onChange={(e) => setFilterTipo(e.target.value)}
+              className="w-full p-2 pr-8 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold uppercase cursor-pointer outline-none focus:ring-2 focus:ring-blue-600"
+            >
+              <option value="">TODOS LOS SACRAMENTOS</option>
+              <option value="BAUTISMO">BAUTISMO</option>
+              <option value="MATRIMONIO">MATRIMONIO</option>
+              <option value="CONFIRMACION">CONFIRMACIÓN</option>
+              <option value="COMUNION">PRIMERA COMUNIÓN</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Fila 2: Filtro por Rango de Fechas (Fecha Inicio y Fecha Fin) + Botón Limpiar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-blue-600" />
+              RANGO DE FECHAS:
+            </span>
+
+            {/* Fecha Inicio */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">DESDE:</span>
+              <input
+                type="date"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+                className="px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Fecha Fin */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">HASTA:</span>
+              <input
+                type="date"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+                className="px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* Botón para Limpiar todos los Filtros */}
+          {(searchNombre || searchUbicacion || filterTipo || fechaInicio || fechaFin) && (
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 dark:text-rose-300 text-xs font-bold uppercase transition-all shadow-xs cursor-pointer border border-rose-200 dark:border-rose-900/50 ml-auto"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>LIMPIAR FILTROS</span>
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Tabla Estandarizada con Conteo y Paginación Servidor */}
       <div className="space-y-3">
