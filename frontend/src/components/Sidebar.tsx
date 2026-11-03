@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Search,
+  BookOpenCheck,
   BookOpen,
   Heart,
   FileText,
@@ -38,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['*'] },
         { id: 'busqueda', label: 'Búsqueda Personas', icon: Search, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
+        { id: 'busqueda-sacramentos', label: 'Búsqueda Sacramentos', icon: BookOpenCheck, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
         { id: 'bautismos', label: 'Bautismos', icon: BookOpen, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
         { id: 'matrimonios', label: 'Matrimonios', icon: Heart, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
         { id: 'notas', label: 'Notas Marginales', icon: FileText, roles: ['SUPERADMIN', 'ADMINISTRADOR', 'PARROCO', 'RECTOR', 'SACERDOTE', 'SECRETARIO'] },
@@ -101,14 +103,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => handleSelectTab(item.id)}
-                    className={`w-full flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
                       isActive
-                        ? 'bg-blue-600 text-white font-bold shadow-sm'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-slate-800/60 hover:text-blue-700 dark:hover:text-slate-200'
+                        ? 'bg-blue-600 text-white shadow-xs font-semibold'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-900/60 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                    <span>{item.label}</span>
+                    <div className="flex items-center gap-2.5 truncate">
+                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
+                      <span className="truncate">{item.label}</span>
+                    </div>
                   </button>
                 );
               })}
@@ -117,33 +121,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
 
-      {/* Parish Footer Card */}
-      <div className="mt-4 p-3 bg-blue-50/60 dark:bg-slate-800/40 rounded-xl border border-blue-100/60 dark:border-slate-800 text-center">
-        <p className="text-[10px] font-bold text-blue-700 dark:text-blue-400">PARROQUIA SANTÍSIMA TRINIDAD</p>
-        <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5">Arquidiócesis de La Paz</p>
+      {/* Footer info canónica */}
+      <div className="p-3 rounded-xl bg-blue-50/50 dark:bg-slate-900/40 border border-blue-100/50 dark:border-slate-800/60 text-[10px] text-slate-500 dark:text-slate-400 space-y-1">
+        <p className="font-bold text-slate-700 dark:text-slate-300">ARQUIDIÓCESIS DE LA PAZ</p>
+        <p>Parroquia Santísima Trinidad</p>
+        <p className="text-[9px] text-slate-400 dark:text-slate-500">FidesSystem v2.0 • 2026</p>
       </div>
     </div>
   );
 
   return (
     <>
-      {/* Mobile Drawer Slide-over */}
+      {/* Desktop Sidebar */}
+      <aside className="w-64 shrink-0 hidden md:block self-start sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-200/60 dark:border-slate-800/60 p-3 shadow-xs h-full">
+          {navContent}
+        </div>
+      </aside>
+
+      {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 md:hidden flex">
+        <div className="fixed inset-0 z-50 md:hidden flex">
           <div
-            className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <aside className="relative z-50 w-56 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 h-full p-3 flex flex-col justify-between border-r border-blue-100 dark:border-slate-800 shadow-2xl overflow-y-auto">
+          <div className="relative w-72 max-w-[80vw] bg-white dark:bg-slate-950 p-4 shadow-2xl flex flex-col h-full border-r border-slate-200 dark:border-slate-800">
             {navContent}
-          </aside>
+          </div>
         </div>
       )}
-
-      {/* Desktop Sticky Floating Sidebar */}
-      <aside className="hidden md:block w-52 flex-shrink-0 sticky top-[57px] h-[calc(100vh-72px)] my-2 ml-4 p-3 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-2xl border border-blue-100 dark:border-slate-800 shadow-sm overflow-y-auto">
-        {navContent}
-      </aside>
     </>
   );
 };

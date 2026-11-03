@@ -212,3 +212,36 @@ export interface OCRScanResult {
   numero_folio_detectado: number;
   numero_partida_detectado: number;
 }
+
+
+export interface SacramentoSearchResult {
+  id: string;
+  partida_id: string;
+  tipo_sacramento: 'BAUTISMO' | 'COMUNION' | 'CONFIRMACION' | 'MATRIMONIO' | string;
+  numero_libro: string;
+  numero_folio: string;
+  numero_partida: string;
+  fecha_sacramento: string;
+  capilla_nombre: string;
+  capilla_id?: string;
+  sacerdote_nombre?: string;
+  titular_principal: string;
+  titular_ci?: string;
+  titular_secundario?: string;
+  detalles_adicionales?: {
+    padre?: string;
+    madre?: string;
+    padrino?: string;
+    madrina?: string;
+    hijo_legitimo?: boolean;
+    novia_ci?: string;
+    testigo_1?: string;
+    testigo_2?: string;
+    reg_civil_oficialia?: string;
+    reg_civil_libro?: string;
+    reg_civil_partida?: string;
+    reg_civil_fecha?: string;
+  };
+  estado_partida: 'ACTIVA' | 'RECTIFICADA' | 'ANULADA' | string;
+  observaciones?: string;
+}

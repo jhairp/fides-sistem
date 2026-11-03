@@ -20,7 +20,8 @@ from .serializers import (
     PartidaBautismoSerializer,
     PartidaMatrimonioSerializer,
     NotaMarginalSerializer,
-    AuditoriaPartidaSerializer
+    AuditoriaPartidaSerializer,
+    BusquedaSacramentoSerializer
 )
 
 
@@ -114,3 +115,97 @@ class AuditoriaPartidaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditoriaPartidaModel.objects.all().order_by('-created_at', 'id')
     serializer_class = AuditoriaPartidaSerializer
     permission_classes = [IsAuthenticated]
+
+
+
+class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = BusquedaSacramentoSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        from django.db.models import Q
+
+        qs = PartidaBaseModel.objects.select_related(
+            'libro',
+            'libro__capilla',
+            'sacerdote_celebrante',
+            'bautismo__bautizado',
+            'bautismo__padre',
+            'bautismo__madre',
+            'bautismo__padrino',
+            'bautismo__madrina',
+            'matrimonio__novio',
+            'matrimonio__novia',
+            'matrimonio__padrino',
+            'matrimonio__madrina',
+            'matrimonio__testigo_1',
+            'matrimonio__testigo_2',
+        ).order_by('-fecha_sacramento', '-numero_folio', '-numero_partida')
+
+        user = self.request.user
+        # Jurisdiccion horizontal
+        if user.is_authenticated and not (user.is_superuser or user.groups.filter(name='ADMINISTRADOR').exists()):
+            user_capillas = user.capillas.all()
+            parroquias_jurisdiccion = [c.parroquia_id for c in user_capillas if c.es_sede_principal]
+            capillas_jurisdiccion = [c.id for c in user_capillas if not c.es_sede_principal]
+            
+            q_juris = Q()
+            if parroquias_jurisdiccion:
+                q_juris |= Q(libro__capilla__parroquia_id__in=parroquias_jurisdiccion)
+            if capillas_jurisdiccion:
+                q_juris |= Q(libro__capilla_id__in=capillas_jurisdiccion)
+            
+            if not q_juris:
+                qs = qs.none()
+            else:
+                qs = qs.filter(q_juris).distinct()
+
+        # Filtros de búsqueda
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(bautismo__bautizado__nombres__icontains=search) |
+                Q(bautismo__bautizado__apellido_paterno__icontains=search) |
+                Q(bautismo__bautizado__apellido_materno__icontains=search) |
+                Q(bautismo__bautizado__ci__icontains=search) |
+                Q(matrimonio__novio__nombres__icontains=search) |
+                Q(matrimonio__novio__apellido_paterno__icontains=search) |
+                Q(matrimonio__novio__apellido_materno__icontains=search) |
+                Q(matrimonio__novio__ci__icontains=search) |
+                Q(matrimonio__novia__nombres__icontains=search) |
+                Q(matrimonio__novia__apellido_paterno__icontains=search) |
+                Q(matrimonio__novia__apellido_materno__icontains=search) |
+                Q(matrimonio__novia__ci__icontains=search) |
+                Q(libro__numero_libro__icontains=search) |
+                Q(numero_folio__icontains=search) |
+                Q(numero_partida__icontains=search) |
+                Q(sacerdote_celebrante__nombres__icontains=search) |
+                Q(sacerdote_celebrante__apellido_paterno__icontains=search)
+            ).distinct()
+
+        tipo_sacramento = self.request.query_params.get('tipo_sacramento', '').strip().upper()
+        if tipo_sacramento and tipo_sacramento != 'TODOS':
+            qs = qs.filter(libro__tipo_sacramento=tipo_sacramento)
+
+        capilla_id = self.request.query_params.get('capilla_id', '').strip()
+        if capilla_id:
+            qs = qs.filter(libro__capilla_id=capilla_id)
+
+        estado = self.request.query_params.get('estado', '').strip().upper()
+        if estado and estado != 'TODOS':
+            qs = qs.filter(estado_partida=estado)
+
+        fecha_desde = self.request.query_params.get('fecha_desde', '').strip()
+        if fecha_desde:
+            qs = qs.filter(fecha_sacramento__gte=fecha_desde)
+
+        fecha_hasta = self.request.query_params.get('fecha_hasta', '').strip()
+        if fecha_hasta:
+            qs = qs.filter(fecha_sacramento__lte=fecha_hasta)
+
+        return qs
+
+    def paginate_queryset(self, queryset):
+        if self.request.query_params.get('all') == 'true':
+            return None
+        return super().paginate_queryset(queryset)

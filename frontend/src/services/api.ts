@@ -11,6 +11,7 @@ import type {
   NotaMarginal,
   Rol,
   Permiso,
+  SacramentoSearchResult,
 } from '../domain/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
@@ -62,6 +63,11 @@ export const updateCapilla = (id: string, data: any) =>
   apiClient.patch(`/sacramentos/capillas/${id}/`, data);
 export const fetchCapilla = (id: string) => apiClient.get(`/sacramentos/capillas/${id}/`);
 export const fetchCapillas = () => apiClient.get('/sacramentos/capillas/');
+
+// ---------- Búsqueda de Sacramentos ----------
+export const fetchBusquedaSacramentos = (params?: Record<string, any>) =>
+  apiClient.get('/sacramentos/busqueda-sacramentos/', { params: { ...params, all: 'true' } });
+
 
 export const apiService = {
   // Auth
@@ -193,6 +199,12 @@ export const apiService = {
     };
     const res = await apiClient.put(`/roles/${id}/`, upperRol);
     return res.data;
+  },
+
+  // Búsqueda de Sacramentos
+  buscarSacramentos: async (params?: Record<string, any>): Promise<SacramentoSearchResult[]> => {
+    const res = await apiClient.get('/sacramentos/busqueda-sacramentos/', { params: { ...params, all: 'true' } });
+    return res.data.results || res.data;
   },
 };
 
