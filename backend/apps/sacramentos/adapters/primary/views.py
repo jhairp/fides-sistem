@@ -21,6 +21,8 @@ from .serializers import (
     PartidaMatrimonioSerializer,
     NotaMarginalSerializer,
     AuditoriaPartidaSerializer,
+    BusquedaSacramentoListSerializer,
+    BusquedaSacramentoDetalleSerializer,
     BusquedaSacramentoSerializer
 )
 
@@ -118,29 +120,67 @@ class AuditoriaPartidaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+
+
+class SacramentoPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'current_page': self.page.number,
+            'page_size': self.get_page_size(self.request),
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+
+
 class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = BusquedaSacramentoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = SacramentoPagination
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return BusquedaSacramentoDetalleSerializer
+        return BusquedaSacramentoListSerializer
 
     def get_queryset(self):
         from django.db.models import Q
 
-        qs = PartidaBaseModel.objects.select_related(
-            'libro',
-            'libro__capilla',
-            'sacerdote_celebrante',
-            'bautismo__bautizado',
-            'bautismo__padre',
-            'bautismo__madre',
-            'bautismo__padrino',
-            'bautismo__madrina',
-            'matrimonio__novio',
-            'matrimonio__novia',
-            'matrimonio__padrino',
-            'matrimonio__madrina',
-            'matrimonio__testigo_1',
-            'matrimonio__testigo_2',
-        ).order_by('-fecha_sacramento', '-numero_folio', '-numero_partida')
+        if self.action == 'retrieve':
+            qs = PartidaBaseModel.objects.select_related(
+                'libro',
+                'libro__capilla',
+                'sacerdote_celebrante',
+                'bautismo__bautizado',
+                'bautismo__padre',
+                'bautismo__madre',
+                'bautismo__padrino',
+                'bautismo__madrina',
+                'matrimonio__novio',
+                'matrimonio__novia',
+                'matrimonio__padrino',
+                'matrimonio__madrina',
+                'matrimonio__testigo_1',
+                'matrimonio__testigo_2',
+            )
+        else:
+            qs = PartidaBaseModel.objects.select_related(
+                'libro',
+                'libro__capilla',
+                'sacerdote_celebrante',
+                'bautismo__bautizado',
+                'matrimonio__novio',
+                'matrimonio__novia',
+            )
+
+        qs = qs.order_by('-fecha_sacramento', '-numero_folio', '-numero_partida')
 
         user = self.request.user
         # Jurisdiccion horizontal
@@ -160,28 +200,38 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 qs = qs.filter(q_juris).distinct()
 
-        # Filtros de búsqueda
+        # Filtros de búsqueda inteligente y rápida
         search = self.request.query_params.get('search', '').strip()
         if search:
-            qs = qs.filter(
-                Q(bautismo__bautizado__nombres__icontains=search) |
-                Q(bautismo__bautizado__apellido_paterno__icontains=search) |
-                Q(bautismo__bautizado__apellido_materno__icontains=search) |
-                Q(bautismo__bautizado__ci__icontains=search) |
-                Q(matrimonio__novio__nombres__icontains=search) |
-                Q(matrimonio__novio__apellido_paterno__icontains=search) |
-                Q(matrimonio__novio__apellido_materno__icontains=search) |
-                Q(matrimonio__novio__ci__icontains=search) |
-                Q(matrimonio__novia__nombres__icontains=search) |
-                Q(matrimonio__novia__apellido_paterno__icontains=search) |
-                Q(matrimonio__novia__apellido_materno__icontains=search) |
-                Q(matrimonio__novia__ci__icontains=search) |
-                Q(libro__numero_libro__icontains=search) |
-                Q(numero_folio__icontains=search) |
-                Q(numero_partida__icontains=search) |
-                Q(sacerdote_celebrante__nombres__icontains=search) |
-                Q(sacerdote_celebrante__apellido_paterno__icontains=search)
-            ).distinct()
+            if search.isdigit():
+                qs = qs.filter(
+                    Q(numero_folio=search) |
+                    Q(numero_partida=search) |
+                    Q(libro__numero_libro=search) |
+                    Q(bautismo__bautizado__ci__icontains=search) |
+                    Q(matrimonio__novio__ci__icontains=search) |
+                    Q(matrimonio__novia__ci__icontains=search)
+                )
+            else:
+                terms = search.split()
+                q_obj = Q()
+                for term in terms:
+                    q_term = (
+                        Q(bautismo__bautizado__nombres__icontains=term) |
+                        Q(bautismo__bautizado__apellido_paterno__icontains=term) |
+                        Q(bautismo__bautizado__apellido_materno__icontains=term) |
+                        Q(bautismo__bautizado__ci__icontains=term) |
+                        Q(matrimonio__novio__nombres__icontains=term) |
+                        Q(matrimonio__novio__apellido_paterno__icontains=term) |
+                        Q(matrimonio__novio__apellido_materno__icontains=term) |
+                        Q(matrimonio__novia__nombres__icontains=term) |
+                        Q(matrimonio__novia__apellido_paterno__icontains=term) |
+                        Q(matrimonio__novia__apellido_materno__icontains=term) |
+                        Q(sacerdote_celebrante__nombres__icontains=term) |
+                        Q(sacerdote_celebrante__apellido_paterno__icontains=term)
+                    )
+                    q_obj &= q_term
+                qs = qs.filter(q_obj).distinct()
 
         tipo_sacramento = self.request.query_params.get('tipo_sacramento', '').strip().upper()
         if tipo_sacramento and tipo_sacramento != 'TODOS':
@@ -204,8 +254,3 @@ class BusquedaSacramentosViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(fecha_sacramento__lte=fecha_hasta)
 
         return qs
-
-    def paginate_queryset(self, queryset):
-        if self.request.query_params.get('all') == 'true':
-            return None
-        return super().paginate_queryset(queryset)

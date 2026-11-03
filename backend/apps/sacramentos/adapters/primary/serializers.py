@@ -60,7 +60,7 @@ class PartidaBaseSerializer(serializers.ModelSerializer):
         return str(obj.sacerdote_celebrante) if obj.sacerdote_celebrante else None
 
 
-class BusquedaSacramentoSerializer(serializers.ModelSerializer):
+class BusquedaSacramentoListSerializer(serializers.ModelSerializer):
     partida_id = serializers.UUIDField(source='id', read_only=True)
     tipo_sacramento = serializers.SerializerMethodField()
     numero_libro = serializers.ReadOnlyField(source='libro.numero_libro')
@@ -70,7 +70,6 @@ class BusquedaSacramentoSerializer(serializers.ModelSerializer):
     titular_principal = serializers.SerializerMethodField()
     titular_ci = serializers.SerializerMethodField()
     titular_secundario = serializers.SerializerMethodField()
-    detalles_adicionales = serializers.SerializerMethodField()
 
     class Meta:
         model = PartidaBaseModel
@@ -88,7 +87,6 @@ class BusquedaSacramentoSerializer(serializers.ModelSerializer):
             'titular_principal',
             'titular_ci',
             'titular_secundario',
-            'detalles_adicionales',
             'estado_partida',
             'observaciones',
         ]
@@ -120,6 +118,13 @@ class BusquedaSacramentoSerializer(serializers.ModelSerializer):
             return str(obj.matrimonio.novia)
         return None
 
+
+class BusquedaSacramentoDetalleSerializer(BusquedaSacramentoListSerializer):
+    detalles_adicionales = serializers.SerializerMethodField()
+
+    class Meta(BusquedaSacramentoListSerializer.Meta):
+        fields = BusquedaSacramentoListSerializer.Meta.fields + ['detalles_adicionales']
+
     def get_detalles_adicionales(self, obj):
         if hasattr(obj, 'bautismo') and obj.bautismo:
             b = obj.bautismo
@@ -144,6 +149,10 @@ class BusquedaSacramentoSerializer(serializers.ModelSerializer):
                 'reg_civil_fecha': str(m.reg_civil_fecha) if m.reg_civil_fecha else None,
             }
         return {}
+
+
+# Alias for backwards compatibility
+BusquedaSacramentoSerializer = BusquedaSacramentoListSerializer
 
 
 class PartidaBautismoSerializer(serializers.ModelSerializer):
