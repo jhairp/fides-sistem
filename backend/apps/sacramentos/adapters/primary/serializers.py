@@ -64,12 +64,14 @@ class BusquedaSacramentoListSerializer(serializers.ModelSerializer):
     partida_id = serializers.UUIDField(source='id', read_only=True)
     tipo_sacramento = serializers.SerializerMethodField()
     numero_libro = serializers.ReadOnlyField(source='libro.numero_libro')
-    capilla_nombre = serializers.ReadOnlyField(source='libro.capilla.nombre')
+    capilla_nombre = serializers.SerializerMethodField()
     capilla_id = serializers.ReadOnlyField(source='libro.capilla.id')
     sacerdote_nombre = serializers.SerializerMethodField()
     titular_principal = serializers.SerializerMethodField()
     titular_ci = serializers.SerializerMethodField()
     titular_secundario = serializers.SerializerMethodField()
+    titular_fecha_nacimiento = serializers.SerializerMethodField()
+    titular_secundario_fecha_nacimiento = serializers.SerializerMethodField()
 
     class Meta:
         model = PartidaBaseModel
@@ -87,9 +89,20 @@ class BusquedaSacramentoListSerializer(serializers.ModelSerializer):
             'titular_principal',
             'titular_ci',
             'titular_secundario',
+            'titular_fecha_nacimiento',
+            'titular_secundario_fecha_nacimiento',
             'estado_partida',
             'observaciones',
         ]
+
+    def get_capilla_nombre(self, obj):
+        # En FidesSystem las actas digitalizadas históricas pertenecen canónicamente al Santuario Jesús del Gran Poder
+        if obj.libro and obj.libro.capilla:
+            nom = obj.libro.capilla.nombre
+            if 'TRINIDAD' in nom.upper():
+                return 'SANTUARIO JESÚS DEL GRAN PODER'
+            return nom
+        return 'SANTUARIO JESÚS DEL GRAN PODER'
 
     def get_tipo_sacramento(self, obj):
         if obj.libro:
@@ -116,6 +129,18 @@ class BusquedaSacramentoListSerializer(serializers.ModelSerializer):
     def get_titular_secundario(self, obj):
         if hasattr(obj, 'matrimonio') and obj.matrimonio and obj.matrimonio.novia:
             return str(obj.matrimonio.novia)
+        return None
+
+    def get_titular_fecha_nacimiento(self, obj):
+        if hasattr(obj, 'bautismo') and obj.bautismo and obj.bautismo.bautizado:
+            return str(obj.bautismo.bautizado.fecha_nacimiento) if obj.bautismo.bautizado.fecha_nacimiento else None
+        if hasattr(obj, 'matrimonio') and obj.matrimonio and obj.matrimonio.novio:
+            return str(obj.matrimonio.novio.fecha_nacimiento) if obj.matrimonio.novio.fecha_nacimiento else None
+        return None
+
+    def get_titular_secundario_fecha_nacimiento(self, obj):
+        if hasattr(obj, 'matrimonio') and obj.matrimonio and obj.matrimonio.novia:
+            return str(obj.matrimonio.novia.fecha_nacimiento) if obj.matrimonio.novia.fecha_nacimiento else None
         return None
 
 
