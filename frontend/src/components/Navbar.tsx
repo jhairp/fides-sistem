@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Church, Sun, Moon, LogOut, User as UserIcon, Search, Building2, Menu, X } from 'lucide-react';
+import { Church, Sun, Moon, LogOut, User as UserIcon, Building2, Menu, X } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { NotificationCenter } from './NotificationCenter';
@@ -15,6 +15,12 @@ export const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, setIsMobileMen
   const { user, logout } = useAuth();
   const [selectedCapilla, setSelectedCapilla] = useState('SANTÍSIMA TRINIDAD (SEDE)');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const isMoniUser =
+    user?.username?.toLowerCase() === 'monicabuscador' ||
+    user?.email?.toLowerCase() === 'monicabuscador@gmail.com';
+
+  const effectiveCapilla = isMoniUser ? 'SANTUARIO JESÚS DEL GRAN PODER' : selectedCapilla;
 
   const capillas = [
     'SANTÍSIMA TRINIDAD (SEDE)',
@@ -52,37 +58,38 @@ export const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, setIsMobileMen
           </div>
         </div>
 
-        {/* Center: Chapel Switcher & Quick Search (Desktop) */}
+        {/* Center: Chapel Switcher (Desktop) - Fijo en Gran Poder para monicabuscador */}
         <div className="hidden lg:flex items-center space-x-3">
-          {/* Chapel Switcher */}
           <div className="relative">
-            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-xs font-medium text-blue-900 dark:text-blue-200">
-              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-              <select
-                value={selectedCapilla}
-                onChange={(e) => setSelectedCapilla(e.target.value)}
-                className="bg-transparent outline-none font-bold cursor-pointer uppercase text-[11px]"
+            {isMoniUser ? (
+              <div
+                className="flex items-center space-x-2 px-3.5 py-1.5 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs font-bold text-amber-900 dark:text-amber-200 shadow-xs cursor-default select-none"
+                title="Capilla asignada exclusiva y no modificable para este usuario"
               >
-                {capillas.map((c, i) => (
-                  <option key={i} value={c} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Global Search Bar Ctrl+K */}
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Buscar sacramento..."
-              className="pl-8 pr-12 py-1.5 w-48 xl:w-56 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-normal focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-            <kbd className="absolute right-2.5 top-2 text-[9px] font-semibold text-slate-400 bg-white dark:bg-slate-700 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-600">
-              Ctrl K
-            </kbd>
+                <Building2 className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span className="text-[11px] font-extrabold uppercase tracking-wide">
+                  SANTUARIO JESÚS DEL GRAN PODER
+                </span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-amber-200/70 dark:bg-amber-900/70 text-amber-900 dark:text-amber-200 font-black uppercase">
+                  ASIGNADO
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-xs font-medium text-blue-900 dark:text-blue-200">
+                <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <select
+                  value={effectiveCapilla}
+                  onChange={(e) => setSelectedCapilla(e.target.value)}
+                  className="bg-transparent outline-none font-bold cursor-pointer uppercase text-[11px]"
+                >
+                  {capillas.map((c, i) => (
+                    <option key={i} value={c} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
 

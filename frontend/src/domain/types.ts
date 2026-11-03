@@ -228,6 +228,8 @@ export interface SacramentoSearchResult {
   titular_principal: string;
   titular_ci?: string;
   titular_secundario?: string;
+  titular_fecha_nacimiento?: string | null;
+  titular_secundario_fecha_nacimiento?: string | null;
   detalles_adicionales?: {
     padre?: string;
     madre?: string;

@@ -12,32 +12,7 @@ export interface NotificationItem {
 
 export const NotificationCenter: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: '1',
-      tipo: 'REGISTRO',
-      titulo: 'NUEVO BAUTISMO REGISTRADO',
-      descripcion: 'JUAN CARLOS MAMANI PEREZ REGISTRADO EN CAPILLA SANTÍSIMA TRINIDAD.',
-      tiempo: 'HACE 10 MIN',
-      leido: false,
-    },
-    {
-      id: '2',
-      tipo: 'OCR',
-      titulo: 'PROCESAMIENTO OCR COMPLETADO',
-      descripcion: 'RECONOCIMIENTO DE IA AL 94.5% EN LIBRO N° 1 DE BAUTISMOS.',
-      tiempo: 'HACE 35 MIN',
-      leido: false,
-    },
-    {
-      id: '3',
-      tipo: 'NOTA',
-      titulo: 'NOTA MARGINAL VINCULADA',
-      descripcion: 'ANOTACIÓN DE MATRIMONIO VINCULADA A BAUTISMO DE SANTA RITA.',
-      tiempo: 'HACE 2 HORAS',
-      leido: true,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const unreadCount = notifications.filter((n) => !n.leido).length;
 
@@ -80,20 +55,23 @@ export const NotificationCenter: React.FC = () => {
                   <Check className="w-3 h-3" /> MARCAR LEÍDAS
                 </button>
               )}
-              <button
-                onClick={clearAll}
-                className="text-[10px] font-extrabold uppercase bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-lg transition-colors cursor-pointer"
-                title="Limpiar todas"
-              >
-                <Trash2 className="w-3 h-3" />
-              </button>
+              {notifications.length > 0 && (
+                <button
+                  onClick={clearAll}
+                  className="text-[10px] font-extrabold uppercase bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                  title="Limpiar todas"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
             </div>
           </div>
 
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 text-xs font-semibold uppercase">
-                No hay notificaciones recientes.
+              <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs font-bold uppercase flex flex-col items-center justify-center gap-2">
+                <CheckCircle2 className="w-7 h-7 text-emerald-500/80" />
+                <span>NO TIENES NOTIFICACIONES PENDIENTES</span>
               </div>
             ) : (
               notifications.map((n) => (

@@ -43,6 +43,16 @@ class Command(BaseCommand):
                 'estado': 'ACTIVA'
             },
             {
+                'nombre': 'SANTUARIO JESUS DEL GRAN PODER',
+                'telefono': '74851234',
+                'ciudad': 'LA PAZ',
+                'municipio': 'LA PAZ',
+                'direccion': 'CALLE ANTONIO GALLARDO',
+                'capacidad_personas': 500,
+                'es_sede_principal': False,
+                'estado': 'ACTIVA'
+            },
+            {
                 'nombre': 'CAPILLA DE SANTA MONICA',
                 'telefono': '741',
                 'ciudad': 'LA PAZ',
@@ -64,6 +74,7 @@ class Command(BaseCommand):
             capillas_db[capilla.nombre] = capilla
 
         capilla_principal = capillas_db['SANTISIMA TRINIDAD']
+        capilla_gran_poder = capillas_db['SANTUARIO JESUS DEL GRAN PODER']
         capilla_secundaria = capillas_db['CAPILLA DE SANTA MONICA']
 
         # 3. Crear Usuarios por Rol
@@ -150,7 +161,7 @@ class Command(BaseCommand):
                 'apellido_materno': 'ROJAS',
                 'sexo': 'F',
                 'fecha_nacimiento': date(1992, 6, 25),
-                'capilla': capilla_principal,
+                'capilla': capilla_gran_poder,
             },
             {
                 'rol': 'FELIGRES',
