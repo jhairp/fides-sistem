@@ -9,6 +9,7 @@ import {
   Sparkles,
   MapPin,
   User,
+  Users,
   ShieldCheck,
   X,
   FileText,
@@ -28,6 +29,38 @@ import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
 import { FeatureTable, type TableColumn } from '../components/common/FeatureTable';
 
+interface AppliedFilters {
+  nombres: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  padre: string;
+  madre: string;
+  libro: string;
+  folio: string;
+  partida: string;
+  tipo_sacramento: string;
+  fecha_nac_desde: string;
+  fecha_nac_hasta: string;
+  fecha_desde: string;
+  fecha_hasta: string;
+}
+
+const initialFilters: AppliedFilters = {
+  nombres: '',
+  apellido_paterno: '',
+  apellido_materno: '',
+  padre: '',
+  madre: '',
+  libro: '',
+  folio: '',
+  partida: '',
+  tipo_sacramento: '',
+  fecha_nac_desde: '',
+  fecha_nac_hasta: '',
+  fecha_desde: '',
+  fecha_hasta: '',
+};
+
 export const BusquedaSacramentosFeature: React.FC = () => {
   const [sacramentos, setSacramentos] = useState<SacramentoSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,24 +70,33 @@ export const BusquedaSacramentosFeature: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // 1. Buscador exclusivo por nombre
-  const [searchNombre, setSearchNombre] = useState('');
-  const [debouncedNombre, setDebouncedNombre] = useState('');
+  // 1. Buscador dividido por Nombres y Apellidos del Titular
+  const [searchNombres, setSearchNombres] = useState('');
+  const [searchApellidoPaterno, setSearchApellidoPaterno] = useState('');
+  const [searchApellidoMaterno, setSearchApellidoMaterno] = useState('');
 
-  // 2. Filtro de ubicación física separado en 3 secciones
+  // 2. Buscador por Padres (Actas de Bautismo)
+  const [searchPadre, setSearchPadre] = useState('');
+  const [searchMadre, setSearchMadre] = useState('');
+
+  // 3. Ubicación física en libros parroquiales (3 Secciones Exactas)
   const [filterLibro, setFilterLibro] = useState('');
-  const [debouncedLibro, setDebouncedLibro] = useState('');
-
   const [filterFolio, setFilterFolio] = useState('');
-  const [debouncedFolio, setDebouncedFolio] = useState('');
-
   const [filterPartida, setFilterPartida] = useState('');
-  const [debouncedPartida, setDebouncedPartida] = useState('');
 
-  // 3. Otros filtros (Tipo y Rango de Fechas)
+  // 4. Tipo de Sacramento
   const [filterTipo, setFilterTipo] = useState('');
+
+  // 5. Rango de Fechas de Nacimiento
+  const [fechaNacInicio, setFechaNacInicio] = useState('');
+  const [fechaNacFin, setFechaNacFin] = useState('');
+
+  // 6. Rango de Fechas de Celebración (Sacramento)
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+
+  // Filtros aplicados para control de paginación desacoplado
+  const [appliedFilters, setAppliedFilters] = useState<AppliedFilters>(initialFilters);
 
   // Selected item for modal & loading detail
   const [selectedSacramento, setSelectedSacramento] = useState<SacramentoSearchResult | null>(null);
@@ -81,41 +123,26 @@ export const BusquedaSacramentosFeature: React.FC = () => {
     return capillaName;
   };
 
-  // Debounce para inputs de texto (350ms)
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      setDebouncedNombre(searchNombre);
-      setDebouncedLibro(filterLibro);
-      setDebouncedFolio(filterFolio);
-      setDebouncedPartida(filterPartida);
-      setCurrentPage(1);
-    }, 350);
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchNombre, filterLibro, filterFolio, filterPartida]);
-
-  const fetchSacramentos = async (page = 1) => {
+  const fetchSacramentos = async (page = 1, filters = appliedFilters) => {
     setLoading(true);
     try {
       const params: Record<string, any> = {
         page,
         page_size: 50,
       };
-      if (debouncedNombre.trim()) params.nombre = debouncedNombre.trim();
-      if (debouncedLibro.trim()) params.libro = debouncedLibro.trim();
-      if (debouncedFolio.trim()) params.folio = debouncedFolio.trim();
-      if (debouncedPartida.trim()) params.partida = debouncedPartida.trim();
-      if (filterTipo) params.tipo_sacramento = filterTipo;
-      if (fechaInicio) params.fecha_desde = fechaInicio;
-      if (fechaFin) params.fecha_hasta = fechaFin;
+      if (filters.nombres.trim()) params.nombres = filters.nombres.trim();
+      if (filters.apellido_paterno.trim()) params.apellido_paterno = filters.apellido_paterno.trim();
+      if (filters.apellido_materno.trim()) params.apellido_materno = filters.apellido_materno.trim();
+      if (filters.padre.trim()) params.padre = filters.padre.trim();
+      if (filters.madre.trim()) params.madre = filters.madre.trim();
+      if (filters.libro.trim()) params.libro = filters.libro.trim();
+      if (filters.folio.trim()) params.folio = filters.folio.trim();
+      if (filters.partida.trim()) params.partida = filters.partida.trim();
+      if (filters.tipo_sacramento) params.tipo_sacramento = filters.tipo_sacramento;
+      if (filters.fecha_nac_desde) params.fecha_nac_desde = filters.fecha_nac_desde;
+      if (filters.fecha_nac_hasta) params.fecha_nac_hasta = filters.fecha_nac_hasta;
+      if (filters.fecha_desde) params.fecha_desde = filters.fecha_desde;
+      if (filters.fecha_hasta) params.fecha_hasta = filters.fecha_hasta;
 
       const res = await apiService.buscarSacramentos(params);
       setSacramentos(res.results || []);
@@ -132,36 +159,68 @@ export const BusquedaSacramentosFeature: React.FC = () => {
     }
   };
 
+  // Carga inicial al montar el componente
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filterTipo, fechaInicio, fechaFin]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchSacramentos(1, initialFilters);
+      return;
+    }
+    fetchSacramentos(currentPage, appliedFilters);
+  }, [currentPage]);
 
-  useEffect(() => {
-    fetchSacramentos(currentPage);
-  }, [
-    currentPage,
-    debouncedNombre,
-    debouncedLibro,
-    debouncedFolio,
-    debouncedPartida,
-    filterTipo,
-    fechaInicio,
-    fechaFin,
-  ]);
+  const handleSearch = () => {
+    const newFilters: AppliedFilters = {
+      nombres: searchNombres.trim(),
+      apellido_paterno: searchApellidoPaterno.trim(),
+      apellido_materno: searchApellidoMaterno.trim(),
+      padre: searchPadre.trim(),
+      madre: searchMadre.trim(),
+      libro: filterLibro.trim(),
+      folio: filterFolio.trim(),
+      partida: filterPartida.trim(),
+      tipo_sacramento: filterTipo,
+      fecha_nac_desde: fechaNacInicio,
+      fecha_nac_hasta: fechaNacFin,
+      fecha_desde: fechaInicio,
+      fecha_hasta: fechaFin,
+    };
+    setAppliedFilters(newFilters);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    } else {
+      fetchSacramentos(1, newFilters);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
 
   const handleClearFilters = () => {
-    setSearchNombre('');
-    setDebouncedNombre('');
+    setSearchNombres('');
+    setSearchApellidoPaterno('');
+    setSearchApellidoMaterno('');
+    setSearchPadre('');
+    setSearchMadre('');
     setFilterLibro('');
-    setDebouncedLibro('');
     setFilterFolio('');
-    setDebouncedFolio('');
     setFilterPartida('');
-    setDebouncedPartida('');
     setFilterTipo('');
+    setFechaNacInicio('');
+    setFechaNacFin('');
     setFechaInicio('');
     setFechaFin('');
-    setCurrentPage(1);
+    setAppliedFilters(initialFilters);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    } else {
+      fetchSacramentos(1, initialFilters);
+    }
   };
 
   const handleOpenDetail = async (item: SacramentoSearchResult) => {
@@ -247,6 +306,22 @@ export const BusquedaSacramentosFeature: React.FC = () => {
       ),
     },
     {
+      header: 'Fecha Nacimiento',
+      render: (s) => (
+        <div className="space-y-0.5">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300 font-mono">
+            <Cake className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            <span>{formatDateDMY(s.titular_fecha_nacimiento)}</span>
+          </span>
+          {s.titular_secundario && s.titular_secundario_fecha_nacimiento && (
+            <p className="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 pl-5">
+              CÓNYUGE: {formatDateDMY(s.titular_secundario_fecha_nacimiento)}
+            </p>
+          )}
+        </div>
+      ),
+    },
+    {
       header: 'Ubicación Canónica (Libro / Página / Partida)',
       render: (s) => (
         <div className="space-y-1">
@@ -307,136 +382,268 @@ export const BusquedaSacramentosFeature: React.FC = () => {
 
       <FeatureHeader
         title="BÚSQUEDA GENERAL DE SACRAMENTOS"
-        description="Búsqueda por nombre de feligrés, ubicación canónica en 3 secciones (libro, folio, partida) y rango de fechas."
+        description="Búsqueda avanzada por titular (nombres y apellidos separados), padres, ubicación canónica exacta (libro, folio, partida) y rangos de fechas de nacimiento y celebración."
         icon={BookOpenCheck}
       />
 
-      {/* Panel de Filtros Reorganizado y Desacoplado */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm space-y-3">
-        {/* Fila 1: Buscador exclusivo por Nombre + Selector de Sacramento */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-          {/* 1. Buscador exclusivo por Nombre */}
-          <div className="relative md:col-span-8">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              value={searchNombre}
-              onChange={(e) => setSearchNombre(e.target.value.toUpperCase())}
-              placeholder="BUSCAR SOLO POR NOMBRE O APELLIDO DEL FELIGRÉS..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-          </div>
+      {/* Panel de Filtros Avanzados y Búsqueda Manual */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-sm space-y-4">
+        {/* Sección 1: Datos del Titular (Feligrés) */}
+        <div>
+          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <User className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>DATOS DEL TITULAR (FELIGRÉS / CONTRAYENTES):</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Nombres */}
+            <div className="relative">
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">NOMBRES:</span>
+              <input
+                type="text"
+                value={searchNombres}
+                onChange={(e) => setSearchNombres(e.target.value.toUpperCase())}
+                onKeyDown={handleKeyDown}
+                placeholder="EJ. EVA MARIA"
+                className="w-full px-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
 
-          {/* Selector de Tipo de Sacramento */}
-          <div className="relative md:col-span-4">
-            <select
-              value={filterTipo}
-              onChange={(e) => setFilterTipo(e.target.value)}
-              className="w-full p-2 pr-8 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold uppercase cursor-pointer outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              <option value="">TODOS LOS SACRAMENTOS</option>
-              <option value="BAUTISMO">BAUTISMO</option>
-              <option value="MATRIMONIO">MATRIMONIO</option>
-              <option value="CONFIRMACION">CONFIRMACIÓN</option>
-              <option value="COMUNION">PRIMERA COMUNIÓN</option>
-            </select>
+            {/* Apellido Paterno */}
+            <div className="relative">
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">APELLIDO PATERNO:</span>
+              <input
+                type="text"
+                value={searchApellidoPaterno}
+                onChange={(e) => setSearchApellidoPaterno(e.target.value.toUpperCase())}
+                onKeyDown={handleKeyDown}
+                placeholder="EJ. FLORES"
+                className="w-full px-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+
+            {/* Apellido Materno */}
+            <div className="relative">
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">APELLIDO MATERNO:</span>
+              <input
+                type="text"
+                value={searchApellidoMaterno}
+                onChange={(e) => setSearchApellidoMaterno(e.target.value.toUpperCase())}
+                onKeyDown={handleKeyDown}
+                placeholder="EJ. MAMANI"
+                className="w-full px-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+
+            {/* Tipo de Sacramento */}
+            <div className="relative">
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">SACRAMENTO:</span>
+              <select
+                value={filterTipo}
+                onChange={(e) => setFilterTipo(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full p-2 pr-8 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold uppercase cursor-pointer outline-none focus:ring-2 focus:ring-blue-600"
+              >
+                <option value="">TODOS LOS SACRAMENTOS</option>
+                <option value="BAUTISMO">BAUTISMO</option>
+                <option value="MATRIMONIO">MATRIMONIO</option>
+                <option value="CONFIRMACION">CONFIRMACIÓN</option>
+                <option value="COMUNION">PRIMERA COMUNIÓN</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Fila 2: Buscador por Ubicación en 3 Secciones (Libro, Folio, Partida) */}
-        <div>
-          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
-            UBICACIÓN FÍSICA EN LIBROS (3 SECCIONES):
+        {/* Sección 2: Padres (Bautismos) */}
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>NOMBRES DE LOS PADRES (FILTRO PARA ACTAS DE BAUTISMO):</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="relative">
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">NOMBRE COMPLETO DEL PADRE:</span>
+              <input
+                type="text"
+                value={searchPadre}
+                onChange={(e) => setSearchPadre(e.target.value.toUpperCase())}
+                onKeyDown={handleKeyDown}
+                placeholder="EJ. CARLOS FLORES"
+                className="w-full px-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+            <div className="relative">
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">NOMBRE COMPLETO DE LA MADRE:</span>
+              <input
+                type="text"
+                value={searchMadre}
+                onChange={(e) => setSearchMadre(e.target.value.toUpperCase())}
+                onKeyDown={handleKeyDown}
+                placeholder="EJ. MARIA MAMANI"
+                className="w-full px-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Sección 3: Ubicación física exacta en libros (3 Secciones) */}
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>UBICACIÓN FÍSICA EXACTA EN LIBROS (3 SECCIONES):</span>
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Sección 1: Número de Libro */}
             <div className="relative">
-              <Bookmark className="w-4 h-4 absolute left-3.5 top-3 text-blue-600/70" />
-              <input
-                type="text"
-                value={filterLibro}
-                onChange={(e) => setFilterLibro(e.target.value.toUpperCase())}
-                placeholder="N° DE LIBRO (EJ. 49)"
-                className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">N° LIBRO (EXACTO):</span>
+              <div className="relative">
+                <Bookmark className="w-4 h-4 absolute left-3.5 top-3 text-blue-600/70" />
+                <input
+                  type="text"
+                  value={filterLibro}
+                  onChange={(e) => setFilterLibro(e.target.value.toUpperCase())}
+                  onKeyDown={handleKeyDown}
+                  placeholder="EJ. 3"
+                  className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
             </div>
 
             {/* Sección 2: Número de Folio / Página */}
             <div className="relative">
-              <FileText className="w-4 h-4 absolute left-3.5 top-3 text-amber-600/70" />
-              <input
-                type="text"
-                value={filterFolio}
-                onChange={(e) => setFilterFolio(e.target.value.toUpperCase())}
-                placeholder="N° FOLIO / PÁGINA (EJ. 118)"
-                className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">N° FOLIO / PÁGINA:</span>
+              <div className="relative">
+                <FileText className="w-4 h-4 absolute left-3.5 top-3 text-amber-600/70" />
+                <input
+                  type="text"
+                  value={filterFolio}
+                  onChange={(e) => setFilterFolio(e.target.value.toUpperCase())}
+                  onKeyDown={handleKeyDown}
+                  placeholder="EJ. 118"
+                  className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
             </div>
 
             {/* Sección 3: Número de Partida / Asiento */}
             <div className="relative">
-              <Hash className="w-4 h-4 absolute left-3.5 top-3 text-emerald-600/70" />
-              <input
-                type="text"
-                value={filterPartida}
-                onChange={(e) => setFilterPartida(e.target.value.toUpperCase())}
-                placeholder="N° DE PARTIDA (EJ. 349)"
-                className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
+              <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">N° PARTIDA:</span>
+              <div className="relative">
+                <Hash className="w-4 h-4 absolute left-3.5 top-3 text-emerald-600/70" />
+                <input
+                  type="text"
+                  value={filterPartida}
+                  onChange={(e) => setFilterPartida(e.target.value.toUpperCase())}
+                  onKeyDown={handleKeyDown}
+                  placeholder="EJ. 349"
+                  className="w-full pl-10 pr-3 py-2 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Fila 3: Rango de Fechas (Fecha Inicio y Fecha Fin) + Botón Limpiar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-blue-600" />
-              RANGO DE FECHAS:
+        {/* Sección 4: Rangos de Fechas (Nacimiento y Celebración) */}
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Rango Fecha Nacimiento */}
+          <div>
+            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase flex items-center gap-1.5 mb-2">
+              <Cake className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              RANGO DE FECHA DE NACIMIENTO:
             </span>
-
-            {/* Fecha Inicio */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">DESDE:</span>
-              <input
-                type="date"
-                value={fechaInicio}
-                onChange={(e) => setFechaInicio(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
-              />
-            </div>
-
-            {/* Fecha Fin */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">HASTA:</span>
-              <input
-                type="date"
-                value={fechaFin}
-                onChange={(e) => setFechaFin(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
-              />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">DESDE:</span>
+                <input
+                  type="date"
+                  value={fechaNacInicio}
+                  onChange={(e) => setFechaNacInicio(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                />
+              </div>
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">HASTA:</span>
+                <input
+                  type="date"
+                  value={fechaNacFin}
+                  onChange={(e) => setFechaNacFin(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Botón para Limpiar todos los Filtros */}
-          {(searchNombre ||
+          {/* Rango Fecha Celebración */}
+          <div>
+            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase flex items-center gap-1.5 mb-2">
+              <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+              RANGO DE FECHA DE CELEBRACIÓN (SACRAMENTO):
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">DESDE:</span>
+                <input
+                  type="date"
+                  value={fechaInicio}
+                  onChange={(e) => setFechaInicio(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                />
+              </div>
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">HASTA:</span>
+                <input
+                  type="date"
+                  value={fechaFin}
+                  onChange={(e) => setFechaFin(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sección 5: Botones de Acción (BUSCAR y LIMPIAR FILTROS) */}
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          {(searchNombres ||
+            searchApellidoPaterno ||
+            searchApellidoMaterno ||
+            searchPadre ||
+            searchMadre ||
             filterLibro ||
             filterFolio ||
             filterPartida ||
             filterTipo ||
+            fechaNacInicio ||
+            fechaNacFin ||
             fechaInicio ||
             fechaFin) && (
             <button
               type="button"
               onClick={handleClearFilters}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 dark:text-rose-300 text-xs font-bold uppercase transition-all shadow-xs cursor-pointer border border-rose-200 dark:border-rose-900/50 ml-auto"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 dark:text-rose-300 text-xs font-bold uppercase transition-all shadow-xs cursor-pointer border border-rose-200 dark:border-rose-900/50"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
               <span>LIMPIAR FILTROS</span>
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={handleSearch}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase transition-all shadow-md hover:shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Search className="w-4 h-4" />
+            )}
+            <span>BUSCAR</span>
+          </button>
         </div>
       </div>
 
@@ -783,4 +990,5 @@ export const BusquedaSacramentosFeature: React.FC = () => {
     </div>
   );
 };
+
 export default BusquedaSacramentosFeature;
