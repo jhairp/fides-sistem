@@ -55,3 +55,4 @@ def custom_exception_handler(exc, context):
         },
         status=status.HTTP_500_INTERNAL_SERVER_ERROR
     )
+
