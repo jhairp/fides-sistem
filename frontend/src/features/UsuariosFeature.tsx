@@ -171,24 +171,41 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSucces
       onClose();
       onSuccess();
     } catch (err: unknown) {
-      const error = err as { response?: { data?: Record<string, string[]> } };
-      if (error.response?.data) {
-        const fieldMap: Record<string, string> = {
-          username: 'Nombre de Usuario',
-          email: 'Correo Electrónico',
-          nombres: 'Nombres',
-          password: 'Contraseña'
-        };
-        const messages = Object.entries(error.response.data)
-          .map(([key, val]) => {
-            const fieldName = fieldMap[key] || key;
-            const errorMsg = Array.isArray(val) ? val.join(' ') : val;
-            return `• ${fieldName.toUpperCase()}: ${errorMsg}`;
-          })
-          .join('\n');
-        setErrorMsg(messages);
+      const error = err as { response?: { data?: unknown; status?: number } };
+      if (error.response?.status === 401) {
+        setErrorMsg('Su sesión ha expirado o no está autorizado. Inicie sesión nuevamente.');
+      } else if (error.response?.data) {
+        if (typeof error.response.data === 'string') {
+          setErrorMsg('Error en el servidor al procesar la solicitud. Por favor verifique los datos o intente nuevamente.');
+        } else if (typeof error.response.data === 'object' && error.response.data !== null) {
+          const dataObj = error.response.data as Record<string, unknown>;
+          if (dataObj.detail) {
+            const detailMsg = Array.isArray(dataObj.detail) ? dataObj.detail.join(' ') : String(dataObj.detail);
+            setErrorMsg(detailMsg);
+          } else {
+            const fieldMap: Record<string, string> = {
+              username: 'Nombre de Usuario',
+              email: 'Correo Electrónico',
+              nombres: 'Nombres',
+              apellido_paterno: 'Apellido Paterno',
+              password: 'Contraseña',
+              capillas: 'Capilla Asignada',
+              persona: 'Persona Vinculada',
+            };
+            const messages = Object.entries(dataObj)
+              .map(([key, val]) => {
+                const fieldName = fieldMap[key] || key;
+                const errorMsg = Array.isArray(val) ? val.join(' ') : String(val);
+                return `• ${fieldName.toUpperCase()}: ${errorMsg}`;
+              })
+              .join('\n');
+            setErrorMsg(messages || 'Datos inválidos. Por favor revise el formulario.');
+          }
+        } else {
+          setErrorMsg('Error al guardar el usuario. Verifique los datos o su conexión.');
+        }
       } else {
-        setErrorMsg('Error al guardar el usuario. Verifique los datos o su conexión.');
+        setErrorMsg('No se pudo conectar con el servidor. Verifique su conexión a internet.');
       }
     }
     setSubmitting(false);

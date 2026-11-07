@@ -162,10 +162,19 @@ class UserCreateUpdateSerializer(serializers.ModelSerializer):
                 )
 
             # Create User
-            user = User.objects.create(
-                persona=persona,
-                **validated_data
-            )
+            try:
+                user = User.objects.create(
+                    persona=persona,
+                    **validated_data
+                )
+            except Exception as e:
+                err_str = str(e).lower()
+                if 'username' in err_str:
+                    raise serializers.ValidationError({"username": "Este nombre de usuario ya está registrado."})
+                if 'email' in err_str:
+                    raise serializers.ValidationError({"email": "Este correo electrónico ya está registrado."})
+                raise serializers.ValidationError({"detail": f"Error al crear el usuario: {str(e)}"})
+
             user.set_password(password)
 
             if capillas:

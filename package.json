@@ -1,7 +1,15 @@
 {
-  "dependencies": {
-    "@tanstack/react-query": "^5.102.6",
-    "axios": "^1.20.0",
-    "lucide-react": "^1.34.0"
+  "name": "fidessystem",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"node run_backend.js\" \"npm run dev --prefix frontend\"",
+    "start": "npm run dev",
+    "dev:backend": "node run_backend.js",
+    "dev:frontend": "npm run dev --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
   }
 }

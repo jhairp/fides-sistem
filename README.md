@@ -76,7 +76,23 @@ python backend/scripts/migrate_access_to_fides.py --execute
 
 ---
 
-## 💻 Ejecución del Backend (Django REST)
+## 🚀 Ejecución Simultánea del Proyecto (Backend + Frontend)
+
+Para iniciar ambos servidores (Django REST en el puerto `8000` y React Vite en el puerto `5173`) **al mismo tiempo con un solo comando**:
+
+```powershell
+npm run dev
+```
+
+> 💡 **En Windows:** También puedes ejecutar `.\dev.bat` o hacer doble clic sobre el archivo `dev.bat` en el explorador de archivos.
+>
+> Detecta automáticamente el entorno virtual (`venv`) de Python y muestra la salida de ambos servicios en la misma consola con etiquetas de color:
+> - `[BACKEND]` → Django API en `http://127.0.0.1:8000/`
+> - `[FRONTEND]` → React Web en `http://localhost:5173/`
+
+---
+
+## 💻 Ejecución Individual del Backend (Django REST)
 
 ```powershell
 # 1. Crear y activar entorno virtual
