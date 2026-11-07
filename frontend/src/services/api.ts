@@ -79,9 +79,18 @@ export const apiService = {
     const res = await apiClient.get('/sacramentos/parroquias/');
     return res.data.results || res.data;
   },
-  getCapillas: async (): Promise<Capilla[]> => {
-    const res = await apiClient.get('/sacramentos/capillas/?all=true');
+  getCapillas: async (search?: string): Promise<Capilla[]> => {
+    const params = search ? { search } : { all: 'true' };
+    const res = await apiClient.get('/sacramentos/capillas/', { params });
     return res.data.results || res.data;
+  },
+  createCapilla: async (data: Record<string, unknown>): Promise<Capilla> => {
+    const res = await apiClient.post('/sacramentos/capillas/', data);
+    return res.data;
+  },
+  updateCapilla: async (id: string, data: Record<string, unknown>): Promise<Capilla> => {
+    const res = await apiClient.patch(`/sacramentos/capillas/${id}/`, data);
+    return res.data;
   },
 
   // Personas
