@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Building2, Phone, MapPin, Users, Plus, Edit3, X, CheckCircle2, Navigation } from 'lucide-react';
+import {
+  Building2,
+  Phone,
+  MapPin,
+  Users,
+  Plus,
+  Edit3,
+  X,
+  CheckCircle2,
+  Navigation,
+  ExternalLink,
+  Map,
+} from 'lucide-react';
 import type { Capilla, Parroquia } from '../domain/types';
 import { apiService } from '../services/api';
 import { useActionAlert } from '../hooks/useActionAlert';
@@ -8,6 +20,7 @@ import TopAlert from '../components/common/TopAlert';
 import { FeatureHeader } from '../components/common/FeatureHeader';
 import { FeatureSearchFilters } from '../components/common/FeatureSearchFilters';
 import { StatusToggleButton, EditButton } from '../components/common/TableButtons';
+import { GoogleMapPicker } from '../components/common/GoogleMapPicker';
 
 const inputClass =
   'w-full p-2.5 rounded-xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 uppercase focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all';
@@ -321,13 +334,25 @@ const CapillaModal: React.FC<CapillaModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Coordenadas GPS (Latitud, Longitud)</label>
-              <input
-                type="text"
-                value={coordenadasGps}
-                onChange={(e) => setCoordenadasGps(e.target.value)}
-                placeholder="EJ. -16.4965, -68.1328"
-                className={inputClass}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={coordenadasGps}
+                  onChange={(e) => setCoordenadasGps(e.target.value)}
+                  placeholder="EJ. -16.4965, -68.1328"
+                  className={inputClass}
+                />
+                {coordenadasGps && (
+                  <button
+                    type="button"
+                    onClick={() => setCoordenadasGps('')}
+                    title="Limpiar coordenadas"
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer text-xs"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
             <div>
               <label className={labelClass}>Estado del Registro</label>
@@ -340,6 +365,26 @@ const CapillaModal: React.FC<CapillaModalProps> = ({
                 <option value="INACTIVA">INACTIVA (DESHABILITADA)</option>
               </select>
             </div>
+          </div>
+
+          {/* Selector interactivo de Google Maps */}
+          <div className="space-y-1.5 pt-1">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-blue-600 dark:text-blue-400 block uppercase tracking-wider font-bold flex items-center gap-1.5">
+                <Map className="w-3.5 h-3.5" />
+                <span>Selector de Coordenadas con Google Maps</span>
+              </label>
+              {coordenadasGps && (
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">
+                  ✓ Coordenadas Fijadas
+                </span>
+              )}
+            </div>
+            <GoogleMapPicker
+              value={coordenadasGps}
+              onChange={(newCoords) => setCoordenadasGps(newCoords)}
+              height="h-56"
+            />
           </div>
 
           {/* Botones de Acción */}
@@ -596,10 +641,24 @@ export const CapillasFeature: React.FC = () => {
                         <span>CAPACIDAD: {c.capacidad_personas ?? 200} PERSONAS</span>
                       </p>
                       {(c.coordenadas_gps || c.coordenadas) && (
-                        <p className="flex items-center gap-2 text-[10px] text-slate-500">
-                          <Navigation className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                          <span>GPS: {c.coordenadas_gps || c.coordenadas}</span>
-                        </p>
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                          <p className="flex items-center gap-1.5 text-[10px] text-slate-500 font-semibold truncate">
+                            <Navigation className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                            <span>GPS: {c.coordenadas_gps || c.coordenadas}</span>
+                          </p>
+                          <a
+                            href={`https://www.google.com/maps?q=${encodeURIComponent(
+                              c.coordenadas_gps || c.coordenadas || ''
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 flex items-center gap-1 uppercase hover:underline flex-shrink-0"
+                            title="Abrir ubicación en Google Maps oficial"
+                          >
+                            <span>Ver en Maps</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
                       )}
                     </div>
                   </div>
