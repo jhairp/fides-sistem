@@ -43,3 +43,6 @@ Thumbs.db
 # OCR & Archivos temporales de subida
 backend/media/uploads/
 backend/media/ocr_temp/
+
+*.mdb
+backend/legacy_exports/
