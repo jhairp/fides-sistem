@@ -1,7 +1,19 @@
 {
+  "name": "fidessystem",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan,magenta\" \"node run_backend.js\" \"npm run dev --prefix frontend\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "node run_backend.js",
+    "build": "npm run build --prefix frontend"
+  },
   "dependencies": {
     "@tanstack/react-query": "^5.102.6",
     "axios": "^1.20.0",
     "lucide-react": "^1.34.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
