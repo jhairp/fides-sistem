@@ -28,3 +28,4 @@ const proc = spawn(pythonCmd, [managePy, 'runserver', '0.0.0.0:8000'], {
 proc.on('close', (code) => {
   process.exit(code || 0);
 });
+
